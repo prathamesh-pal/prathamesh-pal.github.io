@@ -56,7 +56,7 @@
         .container {
             max-width: 700px;
             margin: 0 auto;
-            padding-bottom: 60px; /* Space for the fixed button */
+            padding-bottom: 60px; 
         }
 
         .uppercase { text-transform: uppercase; }
@@ -118,10 +118,10 @@
         /* Section Grids */
         .grid-row {
             display: grid;
-            grid-template-columns: 140px 1fr; /* Fixed width for image col */
+            grid-template-columns: 140px 1fr; 
             border: 1px solid var(--border-color);
             margin-bottom: 2rem;
-            overflow: hidden; /* Keeps image inside rounded corners if needed */
+            overflow: hidden; 
         }
 
         .grid-image-col {
@@ -133,7 +133,7 @@
             overflow: hidden;
         }
 
-        /* Specific class for the bio image to avoid global conflicts */
+        /* Specific class for the bio image */
         .about-icon {
             width: 100%;
             height: 100%;
@@ -145,7 +145,7 @@
             padding: 20px;
         }
 
-        /* Split Columns (Skills/Education) */
+        /* Columns (Skills/Education) */
         .split-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -180,14 +180,14 @@
             display: grid;
             grid-template-columns: 30% 1fr;
             border: 2px solid var(--border-color);
-            margin-bottom: -2px; /* Collapses borders perfectly */
+            margin-bottom: -2px; 
             padding: 15px;
         }
         
         .project-title { font-weight: bold; display: block; }
         .project-sub { font-size: 0.8rem; font-family: var(--font-mono); opacity: 0.8; }
 
-        /* Contact Box */
+        /* C */
         .contact-box {
             text-align: center;
             border: 2px solid var(--border-color);
@@ -217,7 +217,7 @@
             margin-top: 20px;
         }
 
-        /* --- MOBILE RESPONSIVE --- */
+        /* --- MOBILE --- */
         @media (max-width: 600px) {
             h1 { font-size: 1.8rem; }
             
@@ -227,7 +227,7 @@
             
             .grid-image-col { 
                 width: 50%; 
-                height: 100%; /* Limit height on mobile */
+                height: 100%; /* Limit height  mobile */
                 border-right: none;
                 border-bottom: 1px solid var(--border-color);
             }
@@ -276,7 +276,6 @@
         <!-- ABOUT SECTION -->
         <div id="about" class="grid-row">
             <div class="grid-image-col">
-                <!-- Added specific class and fixed double semicolon in CSS -->
                 <img class="about-icon" src="https://t4.ftcdn.net/jpg/15/27/28/61/240_F_1527286160_5sfDsJhldwNAipb2RWVld4bW2QifvTzU.jpg" alt="Prathamesh Pal Avatar">
             </div>
             <div class="grid-content">
@@ -366,10 +365,10 @@
         <div id="contact" class="contact-box">
             <h2 class="uppercase" style="font-size: 2rem; margin-bottom: 1rem;">Let's Work Together</h2>
             <div class="contact-links">
-                <a href="mailto:prathamesh@example.com">[ SEND EMAIL ]</a>
+                <a href="mailto:prathameshpal86@gmail.com">[ SEND EMAIL ]</a>
                 <a href="https://github.com/prathamesh-pal" target="_blank">[ GITHUB ]</a>
-                <a href="https://linkedin.com/in/prathamesh-pal" target="_blank">[ LINKEDIN ]</a>
-                <a href="https://x.com/prathamesh_pal" target="_blank">[ TWITTER ]</a>
+                <a href="https://www.linkedin.com/in/prathamesh-pal-10227a240/" target="_blank">[ LINKEDIN ]</a>
+                <a href="https://x.com/PrathEffect" target="_blank">[ TWITTER ]</a>
             </div>
         </div>
 
