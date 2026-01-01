@@ -3,249 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prathamesh Pal | Portfolio</title>
-    <style>
-        /* --- VARIABLES & THEME CONFIG --- */
-        :root {
-            --bg-color: #ffffff;
-            --text-color: #000000;
-            --border-color: #000000;
-            --accent-color: #f4f4f4;
-            --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            --font-mono: 'Courier New', Courier, monospace;
-        }
-
-        [data-theme="dark"] {
-            --bg-color: #000000;
-            --text-color: #ffffff;
-            --border-color: #ffffff;
-            --accent-color: #1a1a1a;
-        }
-
-        /* --- RESET --- */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            transition: background-color 1s, color .01s, border-color 1s;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-main);
-            line-height: 1.5;
-            padding: 2rem 1rem;
-        }
-
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        ul {
-            list-style-position: inside;
-            padding-left: 1rem;
-        }
-
-        /* --- LAYOUT UTILITIES --- */
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            padding-bottom: 60px; 
-        }
-
-        .uppercase { text-transform: uppercase; }
-        .bold { font-weight: 700; }
-        
-        /* --- COMPONENT STYLES --- */
-        
-        /* Mode Toggle */
-        .toggle-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-        
-        #modeButton {
-            background: var(--bg-color);
-            color: var(--text-color);
-            border: 2px solid var(--border-color);
-            padding: 10px 20px;
-            font-family: var(--font-mono);
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 50px;
-            box-shadow: 2px 2px 0px var(--border-color);
-        }
-
-        #modeButton:hover {
-            background-color: var(--text-color);
-            color: var(--bg-color);
-        }
-
-        /* Header */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            padding-bottom: 10px;
-            border-bottom: 4px solid var(--border-color);
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            line-height: 1;
-            letter-spacing: -1px;
-        }
-
-        /* Nav */
-        nav {
-            font-family: var(--font-mono);
-            font-weight: bold;
-            margin-bottom: 40px;
-            font-size: 0.9rem;
-        }
-        nav a { margin-right: 10px; }
-        nav span { opacity: 0.5; margin-right: 10px; }
-
-        /* Section Grids */
-        .grid-row {
-            display: grid;
-            grid-template-columns: 140px 1fr; 
-            border: 1px solid var(--border-color);
-            margin-bottom: 2rem;
-            overflow: hidden; 
-        }
-
-        .grid-image-col {
-            background-color: #fefefe;
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        /* Specific class for the bio image */
-        .about-icon {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .grid-content {
-            padding: 20px;
-        }
-
-        /* Columns (Skills/Education) */
-        .split-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            border: 2px solid var(--border-color);
-            margin-bottom: 2rem;
-        }
-
-        .split-col {
-            padding: 20px;
-        }
-
-        .split-col:first-child {
-            border-right: 1px solid var(--border-color);
-        }
-
-        .section-header {
-            background-color: var(--text-color);
-            color: var(--bg-color);
-            padding: 5px 10px;
-            font-weight: bold;
-            margin-bottom: 0;
-        }
-
-        .divider {
-            margin: 10px 0;
-            border: 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        /* Projects */
-        .project-item {
-            display: grid;
-            grid-template-columns: 30% 1fr;
-            border: 2px solid var(--border-color);
-            margin-bottom: -2px; 
-            padding: 15px;
-        }
-        
-        .project-title { font-weight: bold; display: block; }
-        .project-sub { font-size: 0.8rem; font-family: var(--font-mono); opacity: 0.8; }
-
-        /* C */
-        .contact-box {
-            text-align: center;
-            border: 2px solid var(--border-color);
-            padding: 60px 20px;
-            margin: 3rem 0;
-        }
-
-        .contact-links {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .contact-links a {
-            font-family: var(--font-mono);
-            font-weight: bold;
-        }
-
-        /* Footer */
-        footer {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            font-family: var(--font-mono);
-            opacity: 0.7;
-            margin-top: 20px;
-        }
-
-        /* --- MOBILE --- */
-        @media (max-width: 600px) {
-            h1 { font-size: 1.8rem; }
-            
-            .grid-row { 
-                grid-template-columns: 1fr; 
-            }
-            
-            .grid-image-col { 
-                width: 50%; 
-                height: 100%; /* Limit height  mobile */
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-            }
-
-            .split-row, .project-item { 
-                grid-template-columns: 1fr; 
-            }
-
-            .split-col:first-child { 
-                border-right: none; 
-                border-bottom: 1px solid var(--border-color); 
-            }
-
-            nav { font-size: 0.8rem; line-height: 1.8;}
-            
-            .project-item { gap: 5px; }
-        }
-    </style>
+    <title>༄˖°🍂.ೃ࿔*:･ॐ.Prathamesh Pal ༄🦋*:･</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
 
@@ -262,7 +22,7 @@
                 <h1 class="uppercase">Prathamesh Pal</h1>
                 <span style="font-size: 0.9rem;">FULL-STACK DEVELOPER & STUDENT</span>
             </div>
-            <div class="bold">[ 2025 ]</div>
+            <div class="bold">[ 2026 ]</div>
         </header>
 
         <!-- NAVIGATION -->
@@ -335,7 +95,7 @@
             <div class="project-item">
                 <div>
                     <span class="project-title uppercase">Auction Hub</span>
-                    <span class="project-sub">ECOMMERCE</span>
+                    <span class="project-sub">ECOMMERCE <a href="https://github.com/prathamesh-pal/Django-BOOKStop"  target="_blank" >🌐</a></span>
                 </div>
                 <div><b>Django-based</b> auction system with bidding, comments, and categories.</div>
             </div>
@@ -379,30 +139,6 @@
         </footer>
 
     </div>
-
-    <script>
-        const modeBtn = document.getElementById('modeButton');
-        const html = document.documentElement;
-
-        modeBtn.addEventListener('click', () => {
-            const currentTheme = html.getAttribute('data-theme');
-            if (currentTheme === 'light') {
-                html.setAttribute('data-theme', 'dark');
-                modeBtn.textContent = "LIGHT MODE";
-            } else {
-                html.setAttribute('data-theme', 'light');
-                modeBtn.textContent = "DARK MODE";
-            }
-        });
-        let angle = 0;
-        const img = document.getElementById("myImage");
-
-        setInterval(() => {
-        angle += .4;
-        img.style.transform = `rotate(${angle}deg)`;
-        }, 16); 
-
-    </script>
 
 </body>
 </html>
