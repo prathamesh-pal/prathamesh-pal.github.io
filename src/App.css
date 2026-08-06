@@ -17,7 +17,7 @@
   --shadow: 2px 2px 0 var(--border-color);
   --transition-fast: .18s ease;
   --transition-normal: .3s ease;
-  --bg-img: url("src/assets/dramatic-scenery-light.avif") ;
+  --bg-img: url("./assets/dramatic-scenery-light.avif") ;
   --bg-overlay: rgba(255, 255, 255, 0.05);
 }
 
@@ -26,7 +26,7 @@
   --text-color: #ffffff;
   --border-color: #ffffff;
   --accent-color: #1a1a1a;
-  --bg-img: url("src/assets/dramatic-scenery-dark.avif");
+  --bg-img: url("./assets/dramatic-scenery-dark.avif");
   --bg-overlay: rgba(0, 0, 0, 0.40);
 
 }
