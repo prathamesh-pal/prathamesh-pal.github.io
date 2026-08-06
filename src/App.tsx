@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { flushSync } from "react-dom"; // Needed for React + View Transitions
 import flowerImg from "./assets/flower.png";
 import flowerImg2 from "./assets/flower2.png";
@@ -16,7 +16,6 @@ function App() {
   // 1. STATE & REFS
   const [theme, setTheme] = useState("light");
 
-  const imgRef = useRef<HTMLImageElement>(null);
 
   const STORAGE_KEY = "theme";
 

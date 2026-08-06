@@ -17,6 +17,8 @@
   --shadow: 2px 2px 0 var(--border-color);
   --transition-fast: .18s ease;
   --transition-normal: .3s ease;
+  --bg-img: url("src/assets/dramatic-scenery-light.avif") ;
+  --bg-overlay: rgba(255, 255, 255, 0.05);
 }
 
 [data-theme="dark"] {
@@ -24,6 +26,9 @@
   --text-color: #ffffff;
   --border-color: #ffffff;
   --accent-color: #1a1a1a;
+  --bg-img: url("src/assets/dramatic-scenery-dark.avif");
+  --bg-overlay: rgba(0, 0, 0, 0.40);
+
 }
 
 /* =========================
@@ -232,7 +237,26 @@ nav span {
 }
 
 .grid-content {
+  position: relative;
   padding: 24px;
+  background-image: var(--bg-img) ;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  overflow: hidden;
+}
+
+.grid-content::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--bg-overlay)
+}
+
+.grid-content p {
+  position: relative;
+  z-index: 1;
 }
 
 /* =========================
