@@ -29,17 +29,17 @@ function Projects() {
             </div>
           </div>
 
-          <div className="project-item">
-            <div>
+          <div className="project-item" onClick={() => window.open("https://github.com/prathamesh-pal/Auctions", "_blank")} >
+            <div >
               <span className="project-title uppercase">Auction Hub</span>{" "}
               <span className="project-sub">
                 ECOMMERCE{" "}
                 <a
-                  href="https://github.com/prathamesh-pal/Django-BOOKStop"
+                  href="https://github.com/prathamesh-pal/Auctions"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  🌐
+                <span className="cert-cta">[🌐 VIEW ]</span>
                 </a>
               </span>
             </div>

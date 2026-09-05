@@ -109,7 +109,7 @@ function App() {
         {/* FOOTER */}
         <footer>
           <div>© 2026 PRATHAMESH PAL</div>
-          <div>Designed by PRATHAMESH</div>
+          <div>Designed by PRATHAMESH's GIRLFRIEND</div>
         </footer>
       </div>
       <div className="flower">

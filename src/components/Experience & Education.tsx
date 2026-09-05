@@ -1,4 +1,8 @@
 import "../App.css";
+import Certifications from "./Certifications.tsx";
+
+// Inside your JSX, after the experience/education split-row:
+<Certifications />
 
 function ExperienceEducation() {
   return (
@@ -24,9 +28,7 @@ function ExperienceEducation() {
               &nbsp;&nbsp;Learning by building & exploring
             </p>
             <br />
-            <p>
-              • <b>M.Sc. Mathematics</b> (In Progress)
-            </p>
+            <Certifications />
           </div>
         </div>
     </div>
