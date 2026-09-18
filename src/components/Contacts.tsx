@@ -13,7 +13,7 @@ function Contacts() {
             <a href="mailto:prathameshpal.tech@gmail.com">[ SEND EMAIL ]</a>
             <a href="https://github.com/prathamesh-pal" target="_blank" rel="noopener noreferrer">[ GITHUB ]</a>
             <a href="https://www.linkedin.com/in/prathamesh-pal-10227a240/" target="_blank" rel="noopener noreferrer">[ LINKEDIN ]</a>
-            <a href="https://x.com/PrathEffect" target="_blank" rel="noopener noreferrer">[ TWITTER ]</a>
+            <a href="https://x.com/Prathamesh_Pal_" target="_blank" rel="noopener noreferrer">[ TWITTER ]</a>
           </div>
         </div>
     </div>
