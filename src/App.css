@@ -93,7 +93,7 @@ a {
 }
 
 a:hover {
-  text-decoration: underline;
+  color: crimson;
 }
 
 ul {
@@ -394,29 +394,160 @@ nav span {
 ========================= */
 
 .project-item {
+  position: relative;
   display: grid;
   grid-template-columns: 180px 1fr;
   gap: 15px;
   padding: 18px;
   border: 2px solid var(--border-color);
   margin-bottom: -2px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  outline: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease,
+              background 0.15s ease, color 0.15s ease;
 }
 
-.project-item:hover {
-  background: var(--accent-color);
+/* keeps :hover alive in the strips the row vacates when it lifts */
+.project-item::after {
+  content: "";
+  position: absolute;
+  inset: 0 -6px -6px 0;
 }
 
-.project-title {
-  font-weight: bold;
-  display: block;
+.project-item:hover,
+.project-item:focus-visible {
+  z-index: 5;
+  transform: translate(-6px, -6px);
+  box-shadow: 6px 6px 0 var(--border-color);
+  background: var(--bg-color);   /* inverts in both themes */
+  color: var(--text-color);
 }
+
+.project-item.clickable { cursor: pointer; }
+
+.project-title { font-weight: bold; display: block; }
 
 .project-sub {
   font-family: var(--font-mono);
-  font-size: .8rem;
-  opacity: .75;
+  font-size: 0.8rem;
+  opacity: 0.75;
 }
 
+/* ---------- hover card ---------- */
+.hover-card {
+  position: absolute;
+  left: 18px;
+  top: calc(100% + 14px);
+  width: min(420px, calc(100% - 36px));
+  padding: 16px;
+  background: var(--bg-color);
+  color: var(--text-color);        /* don't inherit the row's inverted text */
+  border: 2px solid var(--border-color);
+  box-shadow: 8px 8px 0 var(--border-color);
+  cursor: default;
+  visibility: hidden;
+  opacity: 0;
+  transform-origin: top left;
+  z-index: 10;
+}
+
+/* invisible bridge across the gap */
+.hover-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -20px;
+  height: 20px;
+}
+
+.project-item:hover .hover-card,
+.project-item:focus-visible .hover-card {
+  visibility: visible;
+  opacity: 1;
+  animation: hc-frame 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+.project-item:hover .hc-part,
+.project-item:focus-visible .hc-part {
+  animation: hc-assemble 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+  animation-delay: calc(var(--i) * 70ms + 120ms);
+}
+
+@keyframes hc-frame {
+  from { opacity: 0; transform: scale(0.7) translateY(-10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes hc-assemble {
+  from {
+    opacity: 0;
+    transform: translate(var(--x), var(--y)) rotate(var(--r, 0deg)) scale(0.9);
+  }
+  to { opacity: 1; transform: none; }
+}
+
+.hc-part { opacity: 0; }
+
+.hc-head {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.hc-title {
+  font-size: 1.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1;
+  margin: 12px 0 8px;
+}
+
+.hc-blurb {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.hc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.hc-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border: 2px solid var(--border-color);
+}
+
+.hc-foot {
+  margin-top: 14px;
+  padding: 8px 10px;
+  background: var(--text-color);
+  color: var(--bg-color);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+/* touch devices have no hover, and respect reduced motion */
+@media (hover: none) {
+  .hover-card { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-item:hover .hover-card,
+  .project-item:hover .hc-part,
+  .project-item:focus-visible .hover-card,
+  .project-item:focus-visible .hc-part {
+    animation: none;
+    opacity: 1;
+  }
+}
 /* =========================
    CONTACT
 ========================= */
