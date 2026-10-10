@@ -13,7 +13,7 @@ function Nav() {
         <a href="#contact">CONTACT</a><span>//</span>
 
         <a href={Resume} target="_blank" rel="noopener noreferrer" className="nav-resume">
-          RESUME ↗
+          ⌯⌲ RESUME📜
         </a>
       </nav>
     </div>
