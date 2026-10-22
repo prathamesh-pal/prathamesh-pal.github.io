@@ -5,8 +5,29 @@
    Import AFTER App.css:  import "./cyberpunk.css";
    Every rule is scoped to data-theme="cyberpunk", so the
    light and dark themes are never touched.
-   Your existing prefers-reduced-motion rule in App.css already
-   switches off every animation below.
+
+   VISUAL HIERARCHY (loudest last)
+     1. Ambient     slow, subtle, always on: light fields, a faint
+                    sweep, cyan edge breathing, one holo sheen
+     2. Component   noticeable but restrained: section-bar sheen,
+                    card/button/link interaction feedback
+     3. Glitch      brief, rare, memorable: the h1 burst (one
+                    coordinated moment), quieter h2/h3 twitches
+     4. Transition  the theme switch: the most dramatic effect
+
+   Colour roles: cyan = primary light, magenta = disruption
+   (interaction + glitch), violet = depth, yellow = rare spark.
+
+   Layout of this file
+     1. Variables
+     2. Page atmosphere
+     3. Existing elements, restyled (static look)
+     4. Headings + links
+     5. View Transition reveal
+     6. Motion layer (ALL continuous animation, inside
+        prefers-reduced-motion: no-preference)
+     7. Keyframes for the motion layer
+     8. Small-screen / contrast / reduced-motion fallbacks
    ========================================================== */
 
 /* ---------- 1. VARIABLES ---------- */
@@ -21,8 +42,16 @@
   --radius: 0px;
   --shadow: 3px 3px 0 #ff2a6d;
 
-  /* bio box background: colour washes + grid (sized in section 3) */
+  /* bio box background: holo sheen + colour washes + grid (sized in section 3) */
   --bg-img:
+    linear-gradient(
+      115deg,
+      transparent 0 40%,
+      rgba(0, 240, 255, 0.1) 45%,
+      rgba(255, 42, 109, 0.1) 50%,
+      rgba(252, 238, 10, 0.05) 53%,
+      transparent 58% 100%
+    ),
     linear-gradient(135deg, rgba(255, 42, 109, 0.28), transparent 45%),
     linear-gradient(315deg, rgba(0, 240, 255, 0.24), transparent 45%),
     linear-gradient(rgba(0, 240, 255, 0.08) 1px, transparent 1px),
@@ -33,27 +62,44 @@
   --neon-cyan: #00f0ff;
   --neon-magenta: #ff2a6d;
   --neon-yellow: #fcee0a;
+  --neon-violet: #8b2bff;
   --ink: #0d0221;
   --glow: 0 0 6px var(--neon-cyan), 0 0 22px rgba(0, 240, 255, 0.35);
+
+  /* channel triplets, so every glow level can share one colour */
+  --cyan-rgb: 0 240 255;
+  --magenta-rgb: 255 42 109;
+  --yellow-rgb: 252 238 10;
+  --violet-rgb: 139 43 255;
 
   color-scheme: dark;
 }
 
-/* ---------- 2. PAGE TEXTURE ---------- */
+html[data-theme="cyberpunk"] {
+  scrollbar-color: var(--neon-magenta) var(--ink);
+}
 
-/* behind content: colour glows + faint grid */
+/* ---------- 2. PAGE ATMOSPHERE ----------
+   Four fixed, click-through layers. Each has one job:
+     body            colour glows + faint grid (behind content)
+     body::before    static vignette, edge light, very faint scanlines
+     body::after     film grain
+     html::before    drifting light fields
+     html::after    slow light sweep                                  */
+
 [data-theme="cyberpunk"] body {
   background:
     radial-gradient(ellipse 80% 50% at 8% 0%, rgba(255, 42, 109, 0.16), transparent 60%),
     radial-gradient(ellipse 70% 50% at 100% 100%, rgba(0, 240, 255, 0.14), transparent 60%),
+    radial-gradient(ellipse 60% 60% at 40% 55%, rgba(139, 43, 255, 0.1), transparent 65%),
     linear-gradient(rgba(0, 240, 255, 0.045) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 240, 255, 0.045) 1px, transparent 1px),
     var(--bg-color);
-  background-size: auto, auto, 48px 48px, 48px 48px, auto;
+  background-size: auto, auto, auto, 48px 48px, 48px 48px, auto;
   background-attachment: fixed;
 }
 
-/* over content (clicks pass through): scanlines + vignette */
+/* static: chromatic edge light, vignette, barely-there scanlines */
 [data-theme="cyberpunk"] body::before {
   content: "";
   position: fixed;
@@ -61,23 +107,23 @@
   z-index: 998;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%),
-    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px);
+    linear-gradient(90deg, rgba(0, 240, 255, 0.07), transparent 9%, transparent 91%, rgba(255, 42, 109, 0.07)),
+    radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.5) 100%),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.07) 0 1px, transparent 1px 4px);
 }
 
-/* over content: film grain, oversized so shifting it never shows an edge */
+/* film grain, oversized so shifting it never shows an edge */
 [data-theme="cyberpunk"] body::after {
   content: "";
   position: fixed;
   inset: -12%;
   z-index: 998;
   pointer-events: none;
-  opacity: 0.09;
+  opacity: 0.06;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation: cp-grain 0.6s steps(3) infinite;
 }
 
-/* slow scan bar sweeping down the screen */
+/* slow light sweep: soft body, brighter leading edge */
 html[data-theme="cyberpunk"]::after {
   content: "";
   position: fixed;
@@ -87,19 +133,29 @@ html[data-theme="cyberpunk"]::after {
   height: 25vh;
   z-index: 997;
   pointer-events: none;
-  background: linear-gradient(to bottom, transparent, rgba(0, 240, 255, 0.07), transparent);
-  animation: cp-scan 8s linear infinite;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 240, 255, 0.04) 60%,
+    rgba(0, 240, 255, 0.12) 90%,
+    rgba(255, 42, 109, 0.08) 96%,
+    transparent
+  );
 }
 
-@keyframes cp-grain {
-  0%   { transform: translate(0, 0); }
-  33%  { transform: translate(-3%, 2%); }
-  66%  { transform: translate(2%, -3%); }
-  100% { transform: translate(0, 0); }
-}
-
-@keyframes cp-scan {
-  to { transform: translateY(150vh); }
+/* drifting violet / cyan / magenta light fields (low alpha, text stays readable) */
+html[data-theme="cyberpunk"]::before {
+  content: "";
+  position: fixed;
+  inset: -14%;
+  z-index: 996;
+  pointer-events: none;
+  opacity: 0.85;
+  background:
+    radial-gradient(ellipse 45% 40% at 18% 22%, rgba(139, 43, 255, 0.15), transparent 70%),
+    radial-gradient(ellipse 40% 45% at 82% 30%, rgba(0, 240, 255, 0.09), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 60% 88%, rgba(255, 42, 109, 0.1), transparent 70%),
+    radial-gradient(ellipse 30% 30% at 8% 80%, rgba(252, 238, 10, 0.03), transparent 70%);
 }
 
 /* ---------- 3. EXISTING ELEMENTS, RESTYLED ---------- */
@@ -107,6 +163,10 @@ html[data-theme="cyberpunk"]::after {
 [data-theme="cyberpunk"] ::selection {
   background: var(--neon-magenta);
   color: var(--ink);
+}
+
+[data-theme="cyberpunk"] a {
+  transition: color 0.15s, text-shadow 0.15s;
 }
 
 [data-theme="cyberpunk"] a:hover {
@@ -121,7 +181,7 @@ html[data-theme="cyberpunk"]::after {
 
 /* header */
 [data-theme="cyberpunk"] header {
-  box-shadow: 0 10px 16px -14px var(--neon-cyan);
+  box-shadow: 0 10px 16px -14px var(--neon-cyan), 0 1px 0 rgb(var(--magenta-rgb) / 0.3);
 }
 
 /* bio box: image panel + textured background */
@@ -130,20 +190,39 @@ html[data-theme="cyberpunk"]::after {
   background: var(--accent-color);
 }
 
+/* chromatic aberration baked into the portrait (static, rasterised once) */
 [data-theme="cyberpunk"] .about-icon {
-  filter: contrast(1.1) saturate(1.25);
+  filter: contrast(1.1) saturate(1.25)
+    drop-shadow(2px 0 0 rgb(var(--magenta-rgb) / 0.45))
+    drop-shadow(-2px 0 0 rgb(var(--cyan-rgb) / 0.45));
 }
 
+/* layers: holo sheen, 2 colour washes, 2 grid lines (matches --bg-img) */
 [data-theme="cyberpunk"] .grid-content {
-  background-size: cover, cover, 24px 24px, 24px 24px;
-  background-repeat: no-repeat, no-repeat, repeat, repeat;
+  background-size: 260% 100%, cover, cover, 24px 24px, 24px 24px;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat;
+  background-position: 0% 0, 0 0, 0 0, 0 0, 0 0;
 }
 
-/* boxes: soft neon edge */
+/* boxes: one crisp cyan hairline + a different hard-offset sliver per box,
+   so the frames stop reading as three identical rectangles.
+   --edge-outer is reused by the breathing animation in the motion layer. */
 [data-theme="cyberpunk"] .grid-row,
 [data-theme="cyberpunk"] .split-row,
 [data-theme="cyberpunk"] .contact-box {
-  box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.12), inset 0 0 28px rgba(0, 240, 255, 0.05);
+  box-shadow: var(--edge-outer), inset 0 0 28px rgb(var(--cyan-rgb) / 0.05);
+}
+
+[data-theme="cyberpunk"] .grid-row {
+  --edge-outer: 0 0 0 1px rgb(var(--cyan-rgb) / 0.16), 4px 4px 0 -1px rgb(var(--magenta-rgb) / 0.22);
+}
+
+[data-theme="cyberpunk"] .split-row {
+  --edge-outer: 0 0 0 1px rgb(var(--cyan-rgb) / 0.16), -4px 4px 0 -1px rgb(var(--violet-rgb) / 0.4);
+}
+
+[data-theme="cyberpunk"] .contact-box {
+  --edge-outer: 0 0 0 1px rgb(var(--cyan-rgb) / 0.16), 4px -4px 0 -1px rgb(var(--cyan-rgb) / 0.3);
 }
 
 /* quiet the inner dividers so only outer frames glow */
@@ -157,33 +236,57 @@ html[data-theme="cyberpunk"]::after {
   border-bottom-color: rgba(0, 240, 255, 0.25);
 }
 
-[data-theme="cyberpunk"] .cert-item:hover {
-  box-shadow: inset 3px 0 0 var(--neon-magenta);
+[data-theme="cyberpunk"] .cert-item {
+  transition: box-shadow 0.2s;
 }
 
-/* section header bars */
+[data-theme="cyberpunk"] .cert-item:hover {
+  box-shadow: inset 3px 0 0 var(--neon-magenta), inset 0 0 20px rgb(var(--magenta-rgb) / 0.1);
+}
+
+/* section header bars: heavier Orbitron, cyan slab, thin magenta underline */
 [data-theme="cyberpunk"] .section-header {
-  background: var(--neon-cyan);
+  background: linear-gradient(
+    100deg,
+    var(--neon-cyan) 0 42%,
+    #b8fdff 50%,
+    var(--neon-cyan) 58% 100%
+  );
+  background-size: 300% 100%;
+  background-position: 100% 0;
   color: var(--ink);
   font-family: "Orbitron", var(--font-main);
+  font-weight: 900;
   font-size: 0.85rem;
   letter-spacing: 0.08em;
+  box-shadow: 0 2px 0 rgb(var(--magenta-rgb) / 0.75);
 }
 
-/* projects (no clip-path here: it would cut off the hover card) */
+/* projects (no clip-path / transform here: either would break the hover card) */
+[data-theme="cyberpunk"] .project-item {
+  box-shadow: 0 0 8px rgb(var(--cyan-rgb) / 0.1);
+}
+
 [data-theme="cyberpunk"] .project-item:hover,
 [data-theme="cyberpunk"] .project-item:focus-visible {
-  box-shadow: 6px 6px 0 var(--neon-magenta);
+  box-shadow: 6px 6px 0 var(--neon-magenta), -2px -2px 0 rgb(var(--cyan-rgb) / 0.55);
 }
 
+/* hover card: stacked hard edges for depth, one small soft glow */
 [data-theme="cyberpunk"] .hover-card {
-  box-shadow: 8px 8px 0 var(--neon-magenta);
+  text-shadow: none;
+  box-shadow:
+    8px 8px 0 var(--neon-magenta),
+    0 0 0 1px var(--neon-cyan),
+    0 0 16px rgb(var(--cyan-rgb) / 0.25),
+    -4px -4px 0 rgb(var(--cyan-rgb) / 0.3);
 }
 
 [data-theme="cyberpunk"] .hc-title {
   font-family: "Orbitron", var(--font-main);
   font-size: 1.4rem;
   color: var(--neon-cyan);
+  text-shadow: 0 0 6px rgb(var(--cyan-rgb) / 0.55), 1px 0 rgb(var(--magenta-rgb) / 0.45);
 }
 
 [data-theme="cyberpunk"] .hc-foot {
@@ -191,32 +294,42 @@ html[data-theme="cyberpunk"]::after {
   color: var(--ink);
 }
 
-/* theme button */
+/* theme button: crisp at rest, sharp offset-split on hover, presses on click */
 [data-theme="cyberpunk"] #modeButton {
   border-radius: 0;
   border-color: var(--neon-magenta);
   color: var(--neon-magenta);
+  box-shadow: 0 0 0 1px rgb(var(--magenta-rgb) / 0.3), inset 0 0 8px rgb(var(--magenta-rgb) / 0.12);
+  transition: background 0.12s, color 0.12s, box-shadow 0.12s, transform 0.08s;
 }
 
 [data-theme="cyberpunk"] #modeButton:hover {
   background: var(--neon-magenta);
   color: var(--ink);
+  box-shadow: 3px 3px 0 var(--neon-cyan), -3px -3px 0 rgb(var(--yellow-rgb) / 0.7);
 }
 
-/* decorative flowers: recoloured to neon (tune hue-rotate by eye, or use display: none) */
+[data-theme="cyberpunk"] #modeButton:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--neon-cyan);
+}
+
+/* decorative flowers: recoloured to neon, one soft glow each (static: animating
+   filters repaints every frame). Tune hue-rotate by eye, or use display: none. */
 [data-theme="cyberpunk"] .flower {
   opacity: 0.55;
-  filter: hue-rotate(200deg) saturate(2) brightness(1.1) drop-shadow(0 0 14px rgba(0, 240, 255, 0.6));
+  filter: hue-rotate(200deg) saturate(2.2) brightness(1.1) drop-shadow(0 0 10px rgb(var(--cyan-rgb) / 0.55));
 }
 
 [data-theme="cyberpunk"] .flower2 {
   opacity: 0.5;
-  filter: hue-rotate(-30deg) saturate(2) brightness(0.95) drop-shadow(0 0 14px rgba(255, 42, 109, 0.6));
+  filter: hue-rotate(-30deg) saturate(2.2) brightness(1) drop-shadow(0 0 10px rgb(var(--magenta-rgb) / 0.55));
 }
 
-/* ---------- 4. THE ONE LOUD MOMENT: HEADING GLITCH ---------- */
+/* ---------- 4. HEADINGS + LINKS ---------- */
 
-/* h1 gets data-text from the small effect in App.tsx */
+/* h1 gets data-text from the small effect in App.tsx.
+   Stable most of the time; its two pseudo-elements are the slice layers. */
 [data-theme="cyberpunk"] h1 {
   position: relative;
   font-family: "Orbitron", var(--font-main);
@@ -224,7 +337,12 @@ html[data-theme="cyberpunk"]::after {
   letter-spacing: 0.02em;
   color: var(--neon-cyan);
   text-shadow: var(--glow);
-  animation: cp-flicker 6s infinite;
+}
+
+/* lesser headings: one small glow only */
+[data-theme="cyberpunk"] h2:not(.hc-title):not(.section-header),
+[data-theme="cyberpunk"] h3:not(.hc-title):not(.section-header) {
+  text-shadow: 0 0 8px rgb(var(--cyan-rgb) / 0.25);
 }
 
 [data-theme="cyberpunk"] h1[data-text]::before,
@@ -239,59 +357,360 @@ html[data-theme="cyberpunk"]::after {
 
 [data-theme="cyberpunk"] h1[data-text]::before {
   color: var(--neon-magenta);
-  animation: cp-glitch-a 3.2s steps(1) infinite;
 }
 
 [data-theme="cyberpunk"] h1[data-text]::after {
   color: var(--neon-yellow);
-  animation: cp-glitch-b 2.6s steps(1) infinite;
 }
 
+/* magenta layer: the main burst. Same 11s clock as cp-h1-split, so the base
+   text, the slices and the fragments all fire together as ONE event. */
 @keyframes cp-glitch-a {
-  0%, 90%, 100% { clip-path: inset(0 0 100% 0); transform: none; }
-  91% { clip-path: inset(12% 0 62% 0); transform: translate(-5px, 1px); }
-  94% { clip-path: inset(58% 0 12% 0); transform: translate(5px, -1px); }
-  97% { clip-path: inset(32% 0 40% 0); transform: translate(-3px, 0); }
+  0%, 91.5%, 100% { clip-path: inset(0 0 100% 0); transform: none; }
+  92%   { clip-path: polygon(0 14%, 100% 8%, 100% 34%, 0 42%); transform: translate(-9px, 0); }
+  93.5% { clip-path: polygon(0 58%, 100% 62%, 100% 80%, 0 74%); transform: translate(10px, 1px); }
+  94.5% { clip-path: inset(0 0 100% 0); transform: none; }
+  95%   { clip-path: polygon(0 30%, 62% 30%, 62% 52%, 0 52%); transform: translate(-5px, 0); }
+  96%   { clip-path: polygon(38% 66%, 100% 66%, 100% 90%, 38% 90%); transform: translate(7px, -1px); }
+  97%   { clip-path: inset(0 0 100% 0); transform: none; }
 }
 
+/* yellow layer: a rare, thin echo on its own clock, so the burst isn't metronomic */
 @keyframes cp-glitch-b {
-  0%, 84%, 100% { clip-path: inset(0 0 100% 0); transform: none; }
-  86% { clip-path: inset(66% 0 4% 0); transform: translate(4px, 1px); }
-  89% { clip-path: inset(6% 0 78% 0); transform: translate(-4px, -1px); }
+  0%, 88%, 100% { clip-path: inset(0 0 100% 0); transform: none; }
+  89%   { clip-path: polygon(0 70%, 100% 70%, 100% 78%, 0 78%); transform: translate(5px, 0); }
+  90.5% { clip-path: polygon(0 8%, 100% 8%, 100% 14%, 0 14%); transform: translate(-5px, 0); }
+  92%   { clip-path: inset(0 0 100% 0); transform: none; }
 }
 
+/* h1 only: two brief, shallow dips in a long stable stretch */
 @keyframes cp-flicker {
-  0%, 19%, 21%, 60%, 62%, 100% { opacity: 1; }
-  20%, 61% { opacity: 0.6; }
+  0%, 19%, 22%, 58%, 60%, 63%, 100% { opacity: 1; }
+  20.5% { opacity: 0.78; }
+  59% { opacity: 0.82; }
+  61.5% { opacity: 0.76; }
 }
 
-/* small RGB split on link hover */
+/* links: short RGB split + one flicker, only on interaction */
 [data-theme="cyberpunk"] nav a:hover,
 [data-theme="cyberpunk"] .contact-links a:hover {
-  animation: cp-link-glitch 0.35s steps(2) 1;
+  color: var(--neon-magenta);
 }
 
 @keyframes cp-link-glitch {
   0%   { text-shadow: 2px 0 var(--neon-cyan), -2px 0 var(--neon-magenta); }
-  50%  { text-shadow: -2px 0 var(--neon-cyan), 2px 0 var(--neon-magenta); }
+  25%  { text-shadow: -3px 0 var(--neon-cyan), 3px 0 var(--neon-magenta); opacity: 0.8; }
+  50%  { text-shadow: 3px 0 var(--neon-cyan), -2px 0 var(--neon-magenta); opacity: 1; }
+  75%  { text-shadow: -1px 0 var(--neon-cyan), 1px 0 var(--neon-magenta); }
   100% { text-shadow: 0 0 8px rgba(255, 42, 109, 0.7); }
 }
 
 /* ---------- 5. GLITCH REVEAL WHEN SWITCHING TO CYBERPUNK ---------- */
-/* Uses your existing View Transition. The "to-cyberpunk" class is set from App.tsx. */
+/* Uses your existing View Transition. The "to-cyberpunk" class is set from App.tsx.
+   Duration is unchanged (0.7s); only the visual treatment was refined. */
 
 @media (prefers-reduced-motion: no-preference) {
   html.to-cyberpunk::view-transition-new(root) {
-    animation: cp-reveal 0.7s steps(14) forwards;
+    animation: cp-reveal 0.7s steps(7) forwards;
   }
 }
 
+/* signal tear: hard horizontal bands snap open while the picture jumps sideways
+   and its colour channels swing; the last frames settle into a clean page */
 @keyframes cp-reveal {
-  0%   { clip-path: inset(0 0 100% 0); filter: hue-rotate(90deg) saturate(3); }
-  15%  { clip-path: inset(40% 0 45% 0); transform: translateX(-10px); }
-  30%  { clip-path: inset(10% 0 70% 0); transform: translateX(12px); filter: hue-rotate(-70deg) saturate(2); }
-  45%  { clip-path: inset(55% 0 5% 0); transform: translateX(-6px); }
-  60%  { clip-path: inset(0 0 20% 0); transform: translateX(4px); filter: none; }
-  80%  { clip-path: inset(0); transform: translateX(-2px); }
+  0%   { clip-path: inset(0 0 100% 0); transform: translateX(0); filter: hue-rotate(90deg) saturate(3); }
+  10%  { clip-path: inset(45% 0 48% 0); transform: translateX(-14px); }
+  22%  { clip-path: inset(8% 0 78% 0); transform: translateX(16px); filter: hue-rotate(-70deg) saturate(2.4); }
+  34%  { clip-path: inset(62% 0 14% 0); transform: translateX(-18px); filter: hue-rotate(40deg) saturate(2.8); }
+  46%  { clip-path: inset(20% 0 40% 0); transform: translateX(9px); }
+  58%  { clip-path: inset(0 0 24% 0); transform: translateX(-5px); filter: hue-rotate(-20deg) saturate(1.6); }
+  74%  { clip-path: inset(0 0 4% 0); transform: translateX(3px); filter: none; }
   100% { clip-path: inset(0); transform: none; filter: none; }
 }
+
+/* ---------- 6. MOTION LAYER ----------
+   Everything that moves on its own lives in this block, so users who
+   request reduced motion get the finished static look from sections 2-4.
+   Durations are all different so effects drift in and out of phase.
+   Stepped timing is used on the paint-heavy ones (box-shadow, background
+   position) to hold them to a few updates per second. */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* 1. AMBIENT: compositor-only (transform + opacity) */
+  html[data-theme="cyberpunk"]::before {
+    will-change: transform, opacity;
+    animation:
+      cp-bloom-drift 47s ease-in-out infinite alternate,
+      cp-bloom-pulse 13s ease-in-out infinite;
+  }
+
+  html[data-theme="cyberpunk"]::after {
+    will-change: transform, opacity;
+    animation:
+      cp-scan 13s linear infinite,
+      cp-scan-flash 29s ease-in-out infinite;
+  }
+
+  [data-theme="cyberpunk"] body::after {
+    animation: cp-grain 1.1s steps(3) infinite;
+  }
+
+  /* cyan-only inner light slowly breathing, each box on its own clock */
+  [data-theme="cyberpunk"] .grid-row {
+    animation: cp-edge-pulse 19s steps(30) infinite;
+  }
+
+  [data-theme="cyberpunk"] .split-row {
+    animation: cp-edge-pulse 27s steps(40) infinite -9s;
+  }
+
+  [data-theme="cyberpunk"] .contact-box {
+    animation: cp-edge-pulse 23s steps(34) infinite -15s;
+  }
+
+  /* bio panel: one holographic sheen, grid creeping underneath */
+  [data-theme="cyberpunk"] .grid-content {
+    animation: cp-panel-drift 18s steps(80) infinite;
+  }
+
+  /* 2. COMPONENT: section bars sweep once, then rest */
+  [data-theme="cyberpunk"] .section-header {
+    animation: cp-sheen 14s steps(60) infinite;
+  }
+
+  [data-theme="cyberpunk"] .section-header:nth-of-type(even) {
+    animation-duration: 19s;
+    animation-delay: -8s;
+  }
+
+  [data-theme="cyberpunk"] .section-header:hover {
+    animation: cp-label-split 0.45s steps(1) 1;
+  }
+
+  /* 3. GLITCH EVENTS: h1 is the one coordinated moment (11s clock) */
+  [data-theme="cyberpunk"] h1 {
+    animation:
+      cp-flicker 31s linear infinite,
+      cp-h1-split 11s steps(1) infinite;
+  }
+
+  [data-theme="cyberpunk"] h1[data-text]::before {
+    animation: cp-glitch-a 11s steps(1) infinite;
+  }
+
+  [data-theme="cyberpunk"] h1[data-text]::after {
+    animation: cp-glitch-b 7.3s steps(1) infinite;
+  }
+
+  /* h2/h3: a small, rare twitch, no idle flicker */
+  [data-theme="cyberpunk"] h2:not(.hc-title):not(.section-header),
+  [data-theme="cyberpunk"] h3:not(.hc-title):not(.section-header) {
+    animation: cp-head-burst 23s steps(1) infinite;
+  }
+
+  [data-theme="cyberpunk"] h2:not(.hc-title):not(.section-header):nth-of-type(even),
+  [data-theme="cyberpunk"] h3:not(.hc-title):not(.section-header):nth-of-type(even) {
+    animation-duration: 31s;
+    animation-delay: -9s;
+  }
+
+  /* interaction-only effects (each one-shot, nothing idles) */
+  [data-theme="cyberpunk"] .project-item:hover,
+  [data-theme="cyberpunk"] .project-item:focus-visible {
+    animation: cp-card-burst 0.45s steps(1) 1;
+  }
+
+  /* .hc-title is also a .hc-part: App.css starts with opacity 0 and only
+     hc-assemble fades it in. So hc-assemble must stay in this list (same
+     timing as App.css) and the glitch is added after it lands. Replacing
+     the animation outright would leave the title permanently invisible. */
+  [data-theme="cyberpunk"] .project-item:hover .hc-title,
+  [data-theme="cyberpunk"] .project-item:focus-visible .hc-title {
+    animation:
+      hc-assemble 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.25) both,
+      cp-link-glitch 0.4s steps(4) 1;
+    animation-delay:
+      calc(var(--i) * 70ms + 120ms),
+      calc(var(--i) * 70ms + 570ms);
+  }
+
+  [data-theme="cyberpunk"] nav a:hover,
+  [data-theme="cyberpunk"] nav a:focus-visible,
+  [data-theme="cyberpunk"] .contact-links a:hover,
+  [data-theme="cyberpunk"] .contact-links a:focus-visible {
+    animation: cp-link-glitch 0.4s steps(4) 1;
+  }
+
+  [data-theme="cyberpunk"] #modeButton:hover {
+    animation: cp-btn-glitch 0.4s steps(1) 1;
+  }
+}
+
+/* ---------- 7. KEYFRAMES (motion layer) ---------- */
+
+@keyframes cp-grain {
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(-3%, 2%); }
+  66%  { transform: translate(2%, -3%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* sweep, then a long calm before the next pass */
+@keyframes cp-scan {
+  0%   { transform: translateY(0); }
+  72%, 100% { transform: translateY(150vh); }
+}
+
+/* occasional brighter pass */
+@keyframes cp-scan-flash {
+  0%, 62%, 100% { opacity: 0.8; }
+  70% { opacity: 1; }
+  78% { opacity: 0.8; }
+}
+
+@keyframes cp-bloom-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(4%, -3%, 0) scale(1.08); }
+  100% { transform: translate3d(-3%, 4%, 0) scale(1); }
+}
+
+@keyframes cp-bloom-pulse {
+  0%, 100% { opacity: 0.6; }
+  45% { opacity: 1; }
+  70% { opacity: 0.75; }
+}
+
+/* h1 base text: asymmetric channel split + skew snap, then straight back to clean.
+   Same 11s clock and 92-97% window as cp-glitch-a. */
+@keyframes cp-h1-split {
+  0%, 91.5%, 97%, 100% { text-shadow: var(--glow); transform: none; }
+  92% {
+    text-shadow: 5px 0 rgb(var(--magenta-rgb) / 0.9), -3px 0 rgb(var(--cyan-rgb) / 0.9);
+    transform: translateX(-3px) skewX(-6deg);
+  }
+  93.5% {
+    text-shadow: -4px 0 rgb(var(--magenta-rgb) / 0.9), 2px 0 rgb(var(--cyan-rgb) / 0.9);
+    transform: translateX(4px) skewX(5deg);
+  }
+  95% {
+    text-shadow: 2px 0 rgb(var(--yellow-rgb) / 0.8), -2px 0 rgb(var(--cyan-rgb) / 0.8);
+    transform: translateX(-1px);
+  }
+  96% {
+    text-shadow: var(--glow);
+    transform: none;
+  }
+}
+
+@keyframes cp-head-burst {
+  0%, 95%, 100% { transform: none; }
+  96% {
+    text-shadow: 3px 0 rgb(var(--magenta-rgb) / 0.8), -2px 0 rgb(var(--cyan-rgb) / 0.8);
+    transform: translateX(-2px);
+  }
+  97.5% {
+    text-shadow: -2px 0 rgb(var(--magenta-rgb) / 0.8), 2px 0 rgb(var(--cyan-rgb) / 0.8);
+    transform: translateX(2px);
+  }
+  98.5% { transform: none; }
+}
+
+/* highlight crosses the bar once, with a long pause before the next pass */
+@keyframes cp-sheen {
+  0%, 35% { background-position: 100% 0; }
+  100%    { background-position: 0% 0; }
+}
+
+/* hover on a section bar: one-shot split of the dark label */
+@keyframes cp-label-split {
+  0%   { text-shadow: 3px 0 var(--neon-magenta), -3px 0 #ffffff; }
+  33%  { text-shadow: -2px 0 var(--neon-magenta), 2px 0 #ffffff; }
+  66%  { text-shadow: 1px 0 var(--neon-magenta), -1px 0 #ffffff; }
+  100% { text-shadow: none; }
+}
+
+/* inner cyan light swells and relaxes; --edge-outer keeps each box's own frame */
+@keyframes cp-edge-pulse {
+  0%, 100% {
+    box-shadow: var(--edge-outer), inset 0 0 28px rgb(var(--cyan-rgb) / 0.04);
+  }
+  50% {
+    box-shadow: var(--edge-outer), inset 0 0 36px rgb(var(--cyan-rgb) / 0.09);
+  }
+}
+
+/* positions match the 5 layers of --bg-img */
+@keyframes cp-panel-drift {
+  0%   { background-position: 0% 0, 0 0, 0 0, 0 0, 0 0; }
+  100% { background-position: 100% 0, 0 0, 0 0, 24px 24px, 24px 24px; }
+}
+
+/* project card: short hit of offset shadows, then settles into the hover state */
+@keyframes cp-card-burst {
+  0%   { box-shadow: 10px 6px 0 var(--neon-magenta), -4px 0 0 var(--neon-cyan); }
+  25%  { box-shadow: 2px 6px 0 var(--neon-magenta), 5px -2px 0 var(--neon-cyan); }
+  50%  { box-shadow: 8px 2px 0 var(--neon-yellow), -3px 3px 0 var(--neon-cyan); }
+  75%  { box-shadow: 6px 6px 0 var(--neon-magenta), -2px -2px 0 rgb(var(--cyan-rgb) / 0.55); }
+  100% { box-shadow: 6px 6px 0 var(--neon-magenta), -2px -2px 0 rgb(var(--cyan-rgb) / 0.55); }
+}
+
+/* theme button: hard channel offsets, settling into the hover state */
+@keyframes cp-btn-glitch {
+  0%   { box-shadow: 4px 0 0 var(--neon-cyan), -4px 0 0 var(--neon-yellow); }
+  25%  { box-shadow: -4px 2px 0 var(--neon-cyan), 4px -2px 0 var(--neon-yellow); }
+  50%  { box-shadow: 2px -2px 0 var(--neon-cyan), -5px 0 0 var(--neon-yellow); }
+  75%  { box-shadow: 3px 3px 0 var(--neon-cyan), -3px -3px 0 rgb(var(--yellow-rgb) / 0.7); }
+  100% { box-shadow: 3px 3px 0 var(--neon-cyan), -3px -3px 0 rgb(var(--yellow-rgb) / 0.7); }
+}
+
+/* ---------- 8. FALLBACKS ---------- */
+
+/* phones / lower-capability: calmer atmosphere, no sheens, no grain movement */
+@media (max-width: 640px) {
+  html[data-theme="cyberpunk"]::before {
+    opacity: 0.6;
+    animation: cp-bloom-pulse 13s ease-in-out infinite;
+  }
+
+  [data-theme="cyberpunk"] body::after,
+  [data-theme="cyberpunk"] .section-header,
+  [data-theme="cyberpunk"] .grid-content {
+    animation: none;
+  }
+}
+
+/* reduced motion: static look only (all animation is already gated above) */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="cyberpunk"] a,
+  [data-theme="cyberpunk"] .cert-item,
+  [data-theme="cyberpunk"] #modeButton {
+    transition: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  [data-theme="cyberpunk"] body::after,
+  html[data-theme="cyberpunk"]::before,
+  html[data-theme="cyberpunk"]::after {
+    display: none;
+  }
+
+  [data-theme="cyberpunk"] body::before {
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.4) 100%);
+  }
+}
+
+/* ---------- OPTIONAL (disabled): gentle flower drift ----------
+   Only enable if App.css does NOT already animate .flower / .flower2;
+   this would replace that animation. Uncomment to try.
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-theme="cyberpunk"] .flower  { animation: cp-flower-drift 31s ease-in-out infinite alternate; }
+  [data-theme="cyberpunk"] .flower2 { animation: cp-flower-drift 37s ease-in-out infinite alternate -12s; }
+}
+
+@keyframes cp-flower-drift {
+  from { translate: 0 0; }
+  to   { translate: 6px -8px; }
+}
+*/
