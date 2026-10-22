@@ -1,0 +1,297 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap");
+
+/* ==========================================================
+   CYBERPUNK THEME (additive only)
+   Import AFTER App.css:  import "./cyberpunk.css";
+   Every rule is scoped to data-theme="cyberpunk", so the
+   light and dark themes are never touched.
+   Your existing prefers-reduced-motion rule in App.css already
+   switches off every animation below.
+   ========================================================== */
+
+/* ---------- 1. VARIABLES ---------- */
+
+[data-theme="cyberpunk"] {
+  --bg-color: #0d0221;
+  --text-color: #e6f1ff;
+  --border-color: #00f0ff;
+  --accent-color: #170a35;
+  --font-main: "Rajdhani", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "Share Tech Mono", "Courier New", Courier, monospace;
+  --radius: 0px;
+  --shadow: 3px 3px 0 #ff2a6d;
+
+  /* bio box background: colour washes + grid (sized in section 3) */
+  --bg-img:
+    linear-gradient(135deg, rgba(255, 42, 109, 0.28), transparent 45%),
+    linear-gradient(315deg, rgba(0, 240, 255, 0.24), transparent 45%),
+    linear-gradient(rgba(0, 240, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.08) 1px, transparent 1px);
+  --bg-overlay: rgba(13, 2, 33, 0.25);
+
+  /* cyberpunk-only variables */
+  --neon-cyan: #00f0ff;
+  --neon-magenta: #ff2a6d;
+  --neon-yellow: #fcee0a;
+  --ink: #0d0221;
+  --glow: 0 0 6px var(--neon-cyan), 0 0 22px rgba(0, 240, 255, 0.35);
+
+  color-scheme: dark;
+}
+
+/* ---------- 2. PAGE TEXTURE ---------- */
+
+/* behind content: colour glows + faint grid */
+[data-theme="cyberpunk"] body {
+  background:
+    radial-gradient(ellipse 80% 50% at 8% 0%, rgba(255, 42, 109, 0.16), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 100% 100%, rgba(0, 240, 255, 0.14), transparent 60%),
+    linear-gradient(rgba(0, 240, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.045) 1px, transparent 1px),
+    var(--bg-color);
+  background-size: auto, auto, 48px 48px, 48px 48px, auto;
+  background-attachment: fixed;
+}
+
+/* over content (clicks pass through): scanlines + vignette */
+[data-theme="cyberpunk"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px);
+}
+
+/* over content: film grain, oversized so shifting it never shows an edge */
+[data-theme="cyberpunk"] body::after {
+  content: "";
+  position: fixed;
+  inset: -12%;
+  z-index: 998;
+  pointer-events: none;
+  opacity: 0.09;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: cp-grain 0.6s steps(3) infinite;
+}
+
+/* slow scan bar sweeping down the screen */
+html[data-theme="cyberpunk"]::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: -25vh;
+  height: 25vh;
+  z-index: 997;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgba(0, 240, 255, 0.07), transparent);
+  animation: cp-scan 8s linear infinite;
+}
+
+@keyframes cp-grain {
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(-3%, 2%); }
+  66%  { transform: translate(2%, -3%); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes cp-scan {
+  to { transform: translateY(150vh); }
+}
+
+/* ---------- 3. EXISTING ELEMENTS, RESTYLED ---------- */
+
+[data-theme="cyberpunk"] ::selection {
+  background: var(--neon-magenta);
+  color: var(--ink);
+}
+
+[data-theme="cyberpunk"] a:hover {
+  color: var(--neon-magenta);
+  text-shadow: 0 0 8px rgba(255, 42, 109, 0.7);
+}
+
+[data-theme="cyberpunk"] a:focus-visible,
+[data-theme="cyberpunk"] button:focus-visible {
+  outline-color: var(--neon-yellow);
+}
+
+/* header */
+[data-theme="cyberpunk"] header {
+  box-shadow: 0 10px 16px -14px var(--neon-cyan);
+}
+
+/* bio box: image panel + textured background */
+[data-theme="cyberpunk"] .grid-image-col,
+[data-theme="cyberpunk"] .about-icon {
+  background: var(--accent-color);
+}
+
+[data-theme="cyberpunk"] .about-icon {
+  filter: contrast(1.1) saturate(1.25);
+}
+
+[data-theme="cyberpunk"] .grid-content {
+  background-size: cover, cover, 24px 24px, 24px 24px;
+  background-repeat: no-repeat, no-repeat, repeat, repeat;
+}
+
+/* boxes: soft neon edge */
+[data-theme="cyberpunk"] .grid-row,
+[data-theme="cyberpunk"] .split-row,
+[data-theme="cyberpunk"] .contact-box {
+  box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.12), inset 0 0 28px rgba(0, 240, 255, 0.05);
+}
+
+/* quiet the inner dividers so only outer frames glow */
+[data-theme="cyberpunk"] .divider,
+[data-theme="cyberpunk"] .cert-item {
+  border-bottom-color: rgba(0, 240, 255, 0.25);
+}
+
+[data-theme="cyberpunk"] .split-col:first-child {
+  border-right-color: rgba(0, 240, 255, 0.25);
+  border-bottom-color: rgba(0, 240, 255, 0.25);
+}
+
+[data-theme="cyberpunk"] .cert-item:hover {
+  box-shadow: inset 3px 0 0 var(--neon-magenta);
+}
+
+/* section header bars */
+[data-theme="cyberpunk"] .section-header {
+  background: var(--neon-cyan);
+  color: var(--ink);
+  font-family: "Orbitron", var(--font-main);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+}
+
+/* projects (no clip-path here: it would cut off the hover card) */
+[data-theme="cyberpunk"] .project-item:hover,
+[data-theme="cyberpunk"] .project-item:focus-visible {
+  box-shadow: 6px 6px 0 var(--neon-magenta);
+}
+
+[data-theme="cyberpunk"] .hover-card {
+  box-shadow: 8px 8px 0 var(--neon-magenta);
+}
+
+[data-theme="cyberpunk"] .hc-title {
+  font-family: "Orbitron", var(--font-main);
+  font-size: 1.4rem;
+  color: var(--neon-cyan);
+}
+
+[data-theme="cyberpunk"] .hc-foot {
+  background: var(--neon-magenta);
+  color: var(--ink);
+}
+
+/* theme button */
+[data-theme="cyberpunk"] #modeButton {
+  border-radius: 0;
+  border-color: var(--neon-magenta);
+  color: var(--neon-magenta);
+}
+
+[data-theme="cyberpunk"] #modeButton:hover {
+  background: var(--neon-magenta);
+  color: var(--ink);
+}
+
+/* decorative flowers: recoloured to neon (tune hue-rotate by eye, or use display: none) */
+[data-theme="cyberpunk"] .flower {
+  opacity: 0.55;
+  filter: hue-rotate(200deg) saturate(2) brightness(1.1) drop-shadow(0 0 14px rgba(0, 240, 255, 0.6));
+}
+
+[data-theme="cyberpunk"] .flower2 {
+  opacity: 0.5;
+  filter: hue-rotate(-30deg) saturate(2) brightness(0.95) drop-shadow(0 0 14px rgba(255, 42, 109, 0.6));
+}
+
+/* ---------- 4. THE ONE LOUD MOMENT: HEADING GLITCH ---------- */
+
+/* h1 gets data-text from the small effect in App.tsx */
+[data-theme="cyberpunk"] h1 {
+  position: relative;
+  font-family: "Orbitron", var(--font-main);
+  font-size: clamp(1.6rem, 4.2vw, 2.4rem);
+  letter-spacing: 0.02em;
+  color: var(--neon-cyan);
+  text-shadow: var(--glow);
+  animation: cp-flicker 6s infinite;
+}
+
+[data-theme="cyberpunk"] h1[data-text]::before,
+[data-theme="cyberpunk"] h1[data-text]::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  text-shadow: none;
+  clip-path: inset(0 0 100% 0); /* hidden unless animating */
+}
+
+[data-theme="cyberpunk"] h1[data-text]::before {
+  color: var(--neon-magenta);
+  animation: cp-glitch-a 3.2s steps(1) infinite;
+}
+
+[data-theme="cyberpunk"] h1[data-text]::after {
+  color: var(--neon-yellow);
+  animation: cp-glitch-b 2.6s steps(1) infinite;
+}
+
+@keyframes cp-glitch-a {
+  0%, 90%, 100% { clip-path: inset(0 0 100% 0); transform: none; }
+  91% { clip-path: inset(12% 0 62% 0); transform: translate(-5px, 1px); }
+  94% { clip-path: inset(58% 0 12% 0); transform: translate(5px, -1px); }
+  97% { clip-path: inset(32% 0 40% 0); transform: translate(-3px, 0); }
+}
+
+@keyframes cp-glitch-b {
+  0%, 84%, 100% { clip-path: inset(0 0 100% 0); transform: none; }
+  86% { clip-path: inset(66% 0 4% 0); transform: translate(4px, 1px); }
+  89% { clip-path: inset(6% 0 78% 0); transform: translate(-4px, -1px); }
+}
+
+@keyframes cp-flicker {
+  0%, 19%, 21%, 60%, 62%, 100% { opacity: 1; }
+  20%, 61% { opacity: 0.6; }
+}
+
+/* small RGB split on link hover */
+[data-theme="cyberpunk"] nav a:hover,
+[data-theme="cyberpunk"] .contact-links a:hover {
+  animation: cp-link-glitch 0.35s steps(2) 1;
+}
+
+@keyframes cp-link-glitch {
+  0%   { text-shadow: 2px 0 var(--neon-cyan), -2px 0 var(--neon-magenta); }
+  50%  { text-shadow: -2px 0 var(--neon-cyan), 2px 0 var(--neon-magenta); }
+  100% { text-shadow: 0 0 8px rgba(255, 42, 109, 0.7); }
+}
+
+/* ---------- 5. GLITCH REVEAL WHEN SWITCHING TO CYBERPUNK ---------- */
+/* Uses your existing View Transition. The "to-cyberpunk" class is set from App.tsx. */
+
+@media (prefers-reduced-motion: no-preference) {
+  html.to-cyberpunk::view-transition-new(root) {
+    animation: cp-reveal 0.7s steps(14) forwards;
+  }
+}
+
+@keyframes cp-reveal {
+  0%   { clip-path: inset(0 0 100% 0); filter: hue-rotate(90deg) saturate(3); }
+  15%  { clip-path: inset(40% 0 45% 0); transform: translateX(-10px); }
+  30%  { clip-path: inset(10% 0 70% 0); transform: translateX(12px); filter: hue-rotate(-70deg) saturate(2); }
+  45%  { clip-path: inset(55% 0 5% 0); transform: translateX(-6px); }
+  60%  { clip-path: inset(0 0 20% 0); transform: translateX(4px); filter: none; }
+  80%  { clip-path: inset(0); transform: translateX(-2px); }
+  100% { clip-path: inset(0); transform: none; filter: none; }
+}

@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { flushSync } from "react-dom"; // Needed for React + View Transitions
 import flowerImg from "./assets/flower.png";
 import flowerImg2 from "./assets/flower2.png";
-
 import "./App.css";
+import "./cyberpunk.css";
 import Header from "./components/Header";
 import Nav from "./components/Nav";
 import About from "./components/About";
@@ -11,6 +11,14 @@ import Skills from "./components/Skills";
 import Projects from "./components/Projects";
 import ExperienceEducation from "./components/Experience & Education";
 import Contacts from "./components/Contacts";
+
+// Theme order for the toggle button, and the label shown for the NEXT theme
+const THEMES = ["light", "dark", "cyberpunk"];
+const NEXT_LABEL: Record<string, string> = {
+  light: "DARK MODE",
+  dark: "CYBERPUNK",
+  cyberpunk: "LIGHT MODE",
+};
 
 function App() {
   // 1. STATE & REFS
@@ -49,15 +57,27 @@ function App() {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
+  // 3b. CYBERPUNK HEADING GLITCH
+  // Copies each h1's text into data-text so the CSS glitch layers can use it
+  useEffect(() => {
+    document.querySelectorAll("h1").forEach((el) =>
+      el.setAttribute("data-text", el.textContent ?? "")
+    );
+  }, [theme]);
+
   // 4. TOGGLE HANDLER (WITH VIEW TRANSITIONS)
   const toggleTheme = async () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
+    const nextTheme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
 
     if (!document.startViewTransition) {
       setTheme(nextTheme);
       localStorage.setItem(STORAGE_KEY, nextTheme);
       return;
     }
+
+    // Tells the CSS to use the glitch reveal when going TO cyberpunk
+    const root = document.documentElement;
+    root.classList.toggle("to-cyberpunk", nextTheme === "cyberpunk");
 
     const transition = document.startViewTransition(() => {
       // flushSync forces React to synchronously update the DOM. 
@@ -66,6 +86,8 @@ function App() {
         setTheme(nextTheme);
       });
     });
+
+    transition.finished.finally(() => root.classList.remove("to-cyberpunk"));
 
     await transition.ready;
 
@@ -92,10 +114,10 @@ function App() {
         {/* Replaced addEventListener with React's onClick */}
         <button
           id="modeButton"
-          aria-label="Toggle Dark Mode"
+          aria-label="Switch theme"
           onClick={toggleTheme}
         >
-          {theme === "dark" ? "LIGHT MODE" : "DARK MODE"}
+          {NEXT_LABEL[theme] ?? "DARK MODE"}
         </button>
       </div>
       <Header/>

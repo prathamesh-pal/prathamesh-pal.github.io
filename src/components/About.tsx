@@ -1,4 +1,4 @@
-import heroImg  from "../assets/portfolio1.jpg";
+import heroImg  from "../assets/yin-yang.png";
 import { useEffect, useRef } from "react";
 import "../App.css";
 
