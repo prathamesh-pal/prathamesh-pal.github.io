@@ -714,3 +714,148 @@ html[data-theme="cyberpunk"]::before {
   to   { translate: 6px -8px; }
 }
 */
+
+/* ---------- 9. EXPERIMENTAL WORK SECTION ----------
+   Base layout comes from the block added to App.css; this only re-skins it.
+   Kept at the end of the file so it wins ties against the generic h2/h3
+   and link rules above. The orbit and status-dot animations stay in App.css
+   (so the global reduced-motion rule still silences them). */
+
+/* heading bar: same neon slab as .section-header */
+[data-theme="cyberpunk"] .experimental-work__heading {
+  background: linear-gradient(
+    100deg,
+    var(--neon-cyan) 0 42%,
+    #b8fdff 50%,
+    var(--neon-cyan) 58% 100%
+  );
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  color: var(--ink);
+  font-family: "Orbitron", var(--font-main);
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  box-shadow: 0 2px 0 rgb(var(--magenta-rgb) / 0.75);
+}
+
+/* the h2 sits on the cyan bar: no neon glow or twitch, just follow the bar's text-shadow */
+[data-theme="cyberpunk"] .experimental-work .experimental-work__heading h2 {
+  text-shadow: inherit;
+  animation: none;
+}
+
+[data-theme="cyberpunk"] .experimental-work__status {
+  font-family: var(--font-mono);
+}
+
+[data-theme="cyberpunk"] .experimental-work__dot {
+  background: var(--neon-magenta);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+/* card: hairline + violet sliver at rest, project-card hover treatment on interaction.
+   transition is restated because the theme's generic "a" transition would replace it. */
+[data-theme="cyberpunk"] .experimental-work__card {
+  box-shadow: 0 0 0 1px rgb(var(--cyan-rgb) / 0.14), 4px 4px 0 -1px rgb(var(--violet-rgb) / 0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+[data-theme="cyberpunk"] .experimental-work__card:hover,
+[data-theme="cyberpunk"] .experimental-work__card:focus-visible {
+  color: var(--text-color);
+  text-shadow: none;
+  box-shadow: 6px 6px 0 var(--neon-magenta), -2px -2px 0 rgb(var(--cyan-rgb) / 0.55);
+}
+
+[data-theme="cyberpunk"] .experimental-work__meta span:first-child {
+  color: var(--neon-cyan);
+}
+
+[data-theme="cyberpunk"] .experimental-work__content h3 {
+  font-family: "Orbitron", var(--font-main);
+  font-size: clamp(1.5rem, 4.6vw, 2.2rem);
+  letter-spacing: 0.02em;
+  color: var(--neon-cyan);
+}
+
+[data-theme="cyberpunk"] .experimental-work__period {
+  color: var(--neon-magenta);
+  text-shadow: 0 0 8px rgb(var(--magenta-rgb) / 0.7);
+}
+
+[data-theme="cyberpunk"] .experimental-work__content p {
+  font-size: 1.05rem;
+}
+
+[data-theme="cyberpunk"] .experimental-work__cta {
+  background: var(--neon-cyan);
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--neon-magenta);
+  transition: background 0.12s, box-shadow 0.12s;
+}
+
+[data-theme="cyberpunk"] .experimental-work__card:hover .experimental-work__cta,
+[data-theme="cyberpunk"] .experimental-work__card:focus-visible .experimental-work__cta {
+  background: var(--neon-magenta);
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--neon-cyan);
+}
+
+/* visual panel: violet bloom + faint grid; magenta (not the light-theme inversion) on hover */
+[data-theme="cyberpunk"] .experimental-work__visual {
+  --vis-glow: rgb(var(--violet-rgb) / 0.35);
+  color: var(--neon-cyan);
+}
+
+[data-theme="cyberpunk"] .experimental-work__card:hover .experimental-work__visual,
+[data-theme="cyberpunk"] .experimental-work__card:focus-visible .experimental-work__visual {
+  --vis-glow: rgb(var(--magenta-rgb) / 0.3);
+  color: var(--neon-magenta);
+}
+
+[data-theme="cyberpunk"] .experimental-work__visual,
+[data-theme="cyberpunk"] .experimental-work__card:hover .experimental-work__visual,
+[data-theme="cyberpunk"] .experimental-work__card:focus-visible .experimental-work__visual {
+  background:
+    radial-gradient(ellipse 70% 70% at 50% 50%, var(--vis-glow), transparent 70%),
+    linear-gradient(rgb(var(--cyan-rgb) / 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--cyan-rgb) / 0.08) 1px, transparent 1px),
+    var(--accent-color);
+  background-size: auto, 20px 20px, 20px 20px, auto;
+}
+
+/* brutalist geometry: the orbits become squares */
+[data-theme="cyberpunk"] .experimental-work__orbit {
+  border-radius: 0;
+}
+
+[data-theme="cyberpunk"] .experimental-work__symbol {
+  text-shadow: 0 0 10px currentColor;
+}
+
+[data-theme="cyberpunk"] .experimental-work__visual-label {
+  text-shadow: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-theme="cyberpunk"] .experimental-work__heading {
+    animation: cp-sheen 17s steps(60) infinite -4s;
+  }
+
+  [data-theme="cyberpunk"] .experimental-work__heading:hover {
+    animation: cp-label-split 0.45s steps(1) 1;
+  }
+
+  /* same short offset-shadow hit as the project cards (ends on the hover shadow) */
+  [data-theme="cyberpunk"] .experimental-work__card:hover,
+  [data-theme="cyberpunk"] .experimental-work__card:focus-visible {
+    animation: cp-card-burst 0.45s steps(1) 1;
+  }
+}
+
+@media (max-width: 640px) {
+  [data-theme="cyberpunk"] .experimental-work__heading {
+    animation: none;
+  }
+}

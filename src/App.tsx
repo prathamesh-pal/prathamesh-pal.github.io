@@ -9,6 +9,7 @@ import Nav from "./components/Nav";
 import About from "./components/About";
 import Skills from "./components/Skills";
 import Projects from "./components/Projects";
+import ExperimentalWork from "./components/Experiments";
 import ExperienceEducation from "./components/Experience & Education";
 import Contacts from "./components/Contacts";
 
@@ -125,6 +126,7 @@ function App() {
       <About/>
       <Skills/>
       <Projects />
+      <ExperimentalWork/>
       <ExperienceEducation />
       <Contacts />
       <div className="container">
