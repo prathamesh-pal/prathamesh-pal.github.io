@@ -99,13 +99,18 @@ html[data-theme="cyberpunk"] {
   background-attachment: fixed;
 }
 
-/* static: chromatic edge light, vignette, barely-there scanlines */
+/* static: chromatic edge light, vignette, barely-there scanlines.
+   App.css uses body::before for its grain (opacity / blend / invert), so
+   those three are reset here or the vignette comes out dim and multiplied. */
 [data-theme="cyberpunk"] body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 998;
   pointer-events: none;
+  opacity: 1;
+  mix-blend-mode: normal;
+  filter: none;
   background:
     linear-gradient(90deg, rgba(0, 240, 255, 0.07), transparent 9%, transparent 91%, rgba(255, 42, 109, 0.07)),
     radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.5) 100%),
@@ -165,7 +170,9 @@ html[data-theme="cyberpunk"]::before {
   color: var(--ink);
 }
 
-[data-theme="cyberpunk"] a {
+/* :where() keeps this at element-level specificity so component rules
+   (.cc-tile, .cert-item, ...) keep their own transitions */
+:where([data-theme="cyberpunk"]) a {
   transition: color 0.15s, text-shadow 0.15s;
 }
 
@@ -182,6 +189,21 @@ html[data-theme="cyberpunk"]::before {
 /* header */
 [data-theme="cyberpunk"] header {
   box-shadow: 0 10px 16px -14px var(--neon-cyan), 0 1px 0 rgb(var(--magenta-rgb) / 0.3);
+}
+
+/* contact sticker tiles: the generic "nav a:hover" magenta text + glitch would
+   land on a crimson tile, so the tile gets its own full hover state */
+[data-theme="cyberpunk"] .cc-dot {
+  --brand: var(--neon-magenta);
+}
+
+[data-theme="cyberpunk"] nav .cc-tile:hover,
+[data-theme="cyberpunk"] nav .cc-tile:focus-visible {
+  background: var(--neon-magenta);
+  color: var(--ink);
+  text-shadow: none;
+  animation: none;
+  box-shadow: 6px 6px 0 var(--neon-cyan);
 }
 
 /* bio box: image panel + textured background */
