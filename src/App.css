@@ -255,6 +255,7 @@ nav span {
   display: inline-block;
   opacity: 1;                      /* beats `nav span { opacity: .5 }` */
   margin-right: 8px;
+  color:crimson;
 }
 .nav-contact > a { margin-right: 0; }
 

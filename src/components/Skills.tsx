@@ -23,7 +23,7 @@ function Skills() {
               <b className="uppercase">Frameworks</b>
               <hr className="divider" />
               <ul>
-                <li>FastAPI & Django</li>
+                <li>LangChain & FastAPI</li>
                 <li>Node.js</li>
                 <li>React,Tailwind CSS</li>
                 <li>Git</li>
