@@ -1,20 +1,13 @@
-import "../App.css";
+import Datum from "./Datum";
 
-function Header() {
+export default function Header() {
   return (
-     <div className="container">
-        {/* HEADER */}
-        <header>
-          <div>
-            <h1 className="uppercase">Prathamesh Pal</h1>
-            <span style={{ fontSize: "0.9rem" }}>
-              FULL-STACK DEVELOPER & STUDENT
-            </span>
-          </div>
-          <div className="bold">[ 2026 ]</div>
-        </header>
-    </div>
-  )
+    <header className="top">
+      <Datum />
+      <a className="hello" href="mailto:prathameshpal.tech@gmail.com">
+        <span className="hello-t">Say hello</span>
+        <span className="hello-arrow" aria-hidden="true">↗</span>
+      </a>
+    </header>
+  );
 }
-
-export default Header

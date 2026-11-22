@@ -1,0 +1,925 @@
+/* Prathamesh Pal — a ruled column.
+   Black or paper, serif voice, hatched breaks between sections.
+
+   Contents
+   1. Fonts
+   2. Tokens
+   3. Reset + base
+   4. Column, rails, breaks
+   5. Editorial links
+   6. Hero
+   7. Work
+   8. Experiments
+   9. Certificates + lightbox
+   10. Contact
+   11. Top bar
+   12. Dock
+   13. Responsive
+   14. Preferences + print
+*/
+
+/* ---------- 1. fonts ---------- */
+@font-face {
+  font-family: "Instrument Serif";
+  src: url("./assets/fonts/InstrumentSerif-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Instrument Serif";
+  src: url("./assets/fonts/InstrumentSerif-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter Tight";
+  src: url("./assets/fonts/inter-tight-variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("./assets/fonts/GeistMono-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* ---------- 2. tokens ---------- */
+:root,
+:root[data-theme="dark"] {
+  --bg: #000;
+  --fg: #ebe7df;
+  --muted: rgb(235 231 223 / 0.7);
+  --subtle: rgb(235 231 223 / 0.56);
+  --border: #1f1d1a;
+  --hatch: rgb(235 231 223 / 0.1);
+  --underline: rgb(235 231 223 / 0.3);
+  --accent: #9db2ff;
+  --dock: rgb(20 19 17 / 0.72);
+  --dock-solid: #141311;
+  --pill: rgb(235 231 223 / 0.12);
+  --pill-hover: rgb(235 231 223 / 0.08);
+  --shadow: 0 8px 28px rgb(0 0 0 / 0.45);
+  --scrim: rgb(0 0 0 / 0.65);
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #f4f1e8;
+  --fg: #1a1815;
+  --muted: rgb(26 24 21 / 0.78);
+  --subtle: rgb(26 24 21 / 0.66);
+  --border: #dcd7ca;
+  --hatch: rgb(26 24 21 / 0.11);
+  --underline: rgb(26 24 21 / 0.32);
+  --accent: #3345b0;
+  --dock: rgb(250 248 242 / 0.8);
+  --dock-solid: #faf8f2;
+  --pill: rgb(26 24 21 / 0.08);
+  --pill-hover: rgb(26 24 21 / 0.06);
+  --shadow: 0 8px 28px rgb(26 24 21 / 0.14);
+  --scrim: rgb(26 24 21 / 0.5);
+  color-scheme: light;
+}
+
+:root {
+  --serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --sans: "Inter Tight", system-ui, sans-serif;
+  --mono: "Geist Mono", ui-monospace, Menlo, monospace;
+  --ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --edge: 32px;
+  --hatching: repeating-linear-gradient(135deg, var(--hatch) 0 1px, transparent 1px 7px);
+}
+
+/* ---------- 3. reset + base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  scroll-behavior: smooth;
+  scroll-padding-bottom: 96px;
+  /* keep anchored content clear of the dock */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  overflow-x: clip;
+  background: var(--bg);
+  color: var(--muted);
+  font: 400 14px/1.7 var(--sans);
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+dl,
+dd {
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style: none;
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+b {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* Outline follows each element's own radius, so pills stay pills. */
+:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 4px;
+}
+
+.mono {
+  font: 400 12px/1.6 var(--mono);
+  letter-spacing: 0;
+}
+
+.subtle,
+.muted {
+  color: var(--subtle);
+}
+
+.accent {
+  color: var(--accent);
+}
+
+h2,
+.lead,
+.name,
+.hub-title,
+.invite {
+  font-family: var(--serif);
+  font-weight: 400;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+/* ---------- 4. column, rails, breaks ---------- */
+.water {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(0.8px);
+  opacity: 0.9;
+}
+
+/* Fades the water out behind the column so text never sits on it. */
+.page::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: max(-120px, calc((100% - 100vw) / 2));
+  right: max(-120px, calc((100% - 100vw) / 2));
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--bg) 120px, var(--bg) calc(100% - 120px), transparent);
+}
+
+.page {
+  position: relative;
+  /* z-index: 1; */
+  max-width: calc(640px + var(--edge) * 2);
+  min-height: 100vh;
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 0 var(--edge) calc(104px + env(safe-area-inset-bottom));
+  border-inline: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+}
+
+.page::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -1px;
+  right: -1px;
+  height: 1px;
+  background: var(--border);
+
+}
+
+.sec {
+  padding: 56px 0;
+}
+
+.break {
+  height: 32px;
+  margin-inline: calc(var(--edge) * -1);
+  border-block: 1px solid var(--border);
+  background: var(--hatching);
+}
+
+.page>.break:first-child {
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 28px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 28px;
+}
+
+h3 {
+  font: 400 12px/1.6 var(--mono);
+  color: var(--subtle);
+  letter-spacing: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px dotted var(--underline);
+}
+
+h3.sub {
+  margin-top: 32px;
+}
+
+.cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.dotted li {
+  padding: 10px 0;
+  border-bottom: 1px dotted var(--underline);
+}
+
+.dotted li:last-child {
+  border-bottom: 0;
+}
+
+/* ---------- 5. editorial links ----------
+   Dashed underline at rest; a solid line draws in on hover. */
+.ed {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.ed-t {
+  position: relative;
+  text-decoration: underline dashed var(--underline) 1px;
+  text-underline-offset: 5px;
+}
+
+.ed-t::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s var(--ease);
+}
+
+.ed-arrow {
+  opacity: 0;
+  transform: translate(-3px, 3px);
+  color: var(--muted);
+  transition: opacity 0.18s, transform 0.24s var(--ease);
+}
+
+a:focus-visible .ed-t::after {
+  transform: scaleX(1);
+}
+
+a:focus-visible .ed-arrow {
+  opacity: 1;
+  transform: none;
+}
+
+/* Hover only where hover exists, so touch screens don't get stuck states. */
+@media (hover: hover) {
+  a:hover {
+    color: var(--fg);
+  }
+
+  a:hover .ed-t::after,
+  .ed:hover .ed-t::after {
+    transform: scaleX(1);
+  }
+
+  a:hover .ed-arrow,
+  .ed:hover .ed-arrow {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (hover: none) {
+  .ed-arrow {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- 6. hero ---------- */
+.hero {
+  padding-top: 48px;
+}
+
+.datum {
+  display: block;
+  width: 56px;
+  height: 56px;
+  margin: -6px 0 -6px -6px;
+  will-change: transform;
+  cursor: grab;
+  filter: invert(1);
+  transition: filter 0.3s;
+}
+
+:root[data-theme="light"] .datum {
+  filter: none;
+}
+
+/* :root[data-theme="light"] .datum {
+  filter: contrast(0.9) sepia(0.12);
+} */
+
+.name {
+  font-size: clamp(48px, 11vw, 76px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.name span {
+  display: inline-block;
+  animation: rise 0.9s var(--ease) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+  }
+}
+
+.role {
+  margin-top: 12px;
+  color: var(--subtle);
+}
+
+.about-copy {
+  display: grid;
+  gap: 4px;
+  max-width: 34rem;
+  margin-top: 24px;
+}
+
+.invite {
+  margin-top: 32px;
+  font-size: clamp(20px, 5.5vw, 26px);
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+}
+
+.invite .ed {
+  color: var(--accent);
+}
+
+/* ---------- 7. work ---------- */
+.project {
+  display: grid;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.p-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.p-title {
+  font: 400 26px/1.2 var(--serif);
+  letter-spacing: -0.015em;
+  color: var(--fg);
+}
+
+.p-plain .ed-t {
+  text-decoration: none;
+}
+
+.p-plain .ed-t::after {
+  display: none;
+}
+
+.p-blurb {
+  max-width: 32rem;
+}
+
+/* ---------- 8. experiments ---------- */
+.hub {
+  display: grid;
+  gap: 12px;
+  padding: 28px 24px 0;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.hub-title {
+  font-size: 40px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.hub-hatch {
+  height: 28px;
+  margin: 12px -24px 0;
+  border-top: 1px solid var(--border);
+  background: var(--hatching);
+}
+
+@media (hover: hover) {
+  .hub:hover {
+    border-color: var(--underline);
+  }
+}
+
+/* ---------- 9. certificates + lightbox ---------- */
+.certs button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  text-align: left;
+}
+
+.certs .view {
+  color: var(--accent);
+  text-underline-offset: 4px;
+}
+
+.certs button:hover .view,
+.certs button:focus-visible .view {
+  text-decoration: underline dashed;
+}
+
+.lightbox {
+  max-width: min(92vw, 900px);
+  padding: 0;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  overscroll-behavior: contain;
+}
+
+.lightbox::backdrop {
+  background: var(--scrim);
+}
+
+.lightbox img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 78vh;
+  object-fit: contain;
+}
+
+.lightbox .close {
+  width: 100%;
+  padding: 12px 16px;
+  text-align: left;
+  border-top: 1px solid var(--border);
+  font: 400 12px/1.6 var(--mono);
+  transition: background 0.2s, color 0.2s;
+}
+
+.lightbox .close:hover,
+.lightbox .close:focus-visible {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.lightbox .close:focus-visible {
+  outline-offset: -4px;
+  outline-color: var(--bg);
+}
+
+/* ---------- 10. contact ---------- */
+.lead {
+  font-size: clamp(32px, 8vw, 44px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  margin-bottom: 28px;
+}
+
+.channels a {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.c-name {
+  font: 400 22px/1.3 var(--serif);
+  color: var(--fg);
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 24px;
+  margin-top: 48px;
+}
+
+/* ---------- 11. top bar ---------- */
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 0 0;
+}
+
+.hello {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px 8px 16px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--underline);
+  font: 400 12px/1.6 var(--mono);
+  color: var(--fg);
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 0.3s var(--ease), box-shadow 0.2s, transform 0.2s var(--ease);
+}
+
+.hello::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--fg);
+  border-radius: inherit;
+  transform: translateY(101%);
+  transition: transform 0.4s var(--ease);
+}
+
+.hello:focus-visible {
+  color: var(--bg);
+}
+
+.hello:focus-visible::before {
+  transform: none;
+}
+
+.hello-arrow {
+  display: inline-block;
+  transition: transform 0.3s var(--ease);
+}
+
+.hello:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) {
+  .hello:hover {
+    color: var(--bg);
+  }
+
+  .hello:hover::before {
+    transform: none;
+  }
+
+  .hello:hover .hello-arrow {
+    transform: translate(2px, -2px) rotate(8deg);
+  }
+}
+
+.reach {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  margin-top: 28px;
+}
+
+.reach .ed-arrow {
+  margin-left: 2px;
+}
+
+/* ---------- 12. dock ---------- */
+.dock {
+  --p: 0;
+  /* scroll progress, set by JS */
+  position: fixed;
+  z-index: 10;
+  left: 50%;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  max-width: calc(100vw - 24px);
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--dock);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow: inset 0 0 0 1px var(--border), var(--shadow);
+  animation: dock-in 0.8s 0.5s var(--ease) both;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .dock {
+    background: var(--dock-solid);
+  }
+}
+
+.dock::after {
+  content: "";
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 2px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0.85;
+  transform: scaleX(var(--p));
+  transform-origin: left;
+}
+
+@keyframes dock-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 24px);
+  }
+}
+
+.dock ul {
+  --x: 0px;
+  /* pill offset, set by JS */
+  --w: 0px;
+  /* pill width, set by JS */
+  position: relative;
+  display: flex;
+}
+
+.dock .pill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--w);
+  border-radius: 999px;
+  background: var(--pill);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+  transform: translateX(var(--x));
+  transition: transform 0.45s var(--spring), width 0.45s var(--spring);
+  pointer-events: none;
+}
+
+.dock li {
+  position: relative;
+}
+
+.dock a {
+  display: grid;
+  place-items: center;
+  min-height: 40px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  font: 400 12px/1 var(--mono);
+  letter-spacing: 0;
+  color: var(--subtle);
+  transition: color 0.2s;
+}
+
+.dock a span {
+  display: block;
+  transform: scale(var(--s, 1));
+  transition: transform 0.18s var(--ease);
+}
+
+.dock a:hover,
+.dock a[aria-current] {
+  color: var(--fg);
+}
+
+.dock a:active span {
+  transform: scale(0.94);
+}
+
+.theme-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-left: 4px;
+  border-radius: 999px;
+  color: var(--subtle);
+  transition: color 0.2s, background 0.2s, transform 0.2s var(--ease);
+}
+
+.theme-btn:focus-visible {
+  color: var(--fg);
+}
+
+.theme-btn:active {
+  transform: scale(0.9);
+}
+
+@media (hover: hover) {
+  .theme-btn:hover {
+    color: var(--fg);
+    background: var(--pill-hover);
+  }
+}
+
+.theme-btn svg {
+  overflow: visible;
+}
+
+.theme-btn .sun,
+.theme-btn .moon {
+  transform-origin: 8px 8px;
+  transition: opacity 0.3s, transform 0.6s var(--ease);
+}
+
+.theme-btn.dark .sun,
+.theme-btn.light .moon {
+  opacity: 1;
+  transform: none;
+}
+
+.theme-btn.dark .moon {
+  opacity: 0;
+  transform: rotate(-80deg) scale(0.5);
+}
+
+.theme-btn.light .sun {
+  opacity: 0;
+  transform: rotate(80deg) scale(0.5);
+}
+
+/* ---------- 13. responsive ---------- */
+@media (max-width: 640px) {
+  :root {
+    --edge: 20px;
+  }
+
+  .page::before {
+    left: 0;
+    right: 0;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+  }
+
+  .sec {
+    padding: 44px 0;
+  }
+
+  .hero {
+    padding-top: 40px;
+  }
+
+  .cols {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .dock a {
+    padding: 10px 8px;
+    font-size: 11px;
+  }
+
+  .hub {
+    padding: 22px 18px 0;
+  }
+
+  .hub-hatch {
+    margin-inline: -18px;
+  }
+}
+
+/* ---------- 14. preferences + print ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+
+  .dock,
+  .hello,
+  .hub {
+    border: 1px solid CanvasText;
+  }
+
+  .dock .pill {
+    background: Highlight;
+    forced-color-adjust: none;
+    opacity: 0.4;
+  }
+}
+
+@media print {
+
+  .water,
+  .dock,
+  .top .hello {
+    display: none !important;
+  }
+
+  :root,
+  :root[data-theme="dark"] {
+    --bg: #fff;
+    --fg: #000;
+    --muted: #222;
+    --subtle: #444;
+    --border: #bbb;
+    --hatch: transparent;
+    --underline: #888;
+    --accent: #000;
+  }
+
+  .page {
+    max-width: none;
+    padding-bottom: 0;
+    border: 0;
+  }
+
+  .page::before,
+  .page::after {
+    display: none;
+  }
+
+  .name span {
+    animation: none;
+  }
+}

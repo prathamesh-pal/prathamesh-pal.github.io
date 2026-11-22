@@ -1,149 +1,45 @@
-import { useState, useEffect } from "react";
-import { flushSync } from "react-dom"; // Needed for React + View Transitions
-import flowerImg from "./assets/flower.png";
-import flowerImg2 from "./assets/flower2.png";
-import "./App.css";
-import "./cyberpunk.css";
+import { Fragment, useEffect, useState } from "react";
+import "./styles.css";
+import { SECTIONS } from "./content";
+import { useTheme } from "./useTheme";
+import Dock from "./components/Dock";
 import Header from "./components/Header";
-import Nav from "./components/Nav";
-import About from "./components/About";
+import Water from "./components/Water";
+import Hero from "./components/Hero";
 import Skills from "./components/Skills";
 import Projects from "./components/Projects";
 import ExperimentalWork from "./components/Experiments";
 import ExperienceEducation from "./components/Experience & Education";
 import Contacts from "./components/Contacts";
 
-// Theme order for the toggle button, and the label shown for the NEXT theme
-const THEMES = ["light", "dark", "cyberpunk"];
-const NEXT_LABEL: Record<string, string> = {
-  light: "DARK MODE",
-  dark: "CYBERPUNK",
-  cyberpunk: "LIGHT MODE",
-};
+const PAGES = [Hero, Projects, Skills, ExperimentalWork, ExperienceEducation, Contacts];
 
-function App() {
-  // 1. STATE & REFS
-  const [theme, setTheme] = useState("light");
+export default function App() {
+  const { theme, toggle } = useTheme();
+  const [active, setActive] = useState<string>(SECTIONS[0].id);
 
-
-  const STORAGE_KEY = "theme";
-
-  // 2. INITIAL LOAD & SYSTEM PREFERENCES
   useEffect(() => {
-    const savedTheme = localStorage.getItem(STORAGE_KEY);
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else {
-      setTheme(mediaQuery.matches ? "dark" : "light");
-    }
-
-    // Follow system theme if the user hasn't chosen manually
-    const handleSystemChange = (event: MediaQueryListEvent) => {
-      if (!localStorage.getItem(STORAGE_KEY)) {
-        setTheme(event.matches ? "dark" : "light");
-      }
-    };
-
-    mediaQuery.addEventListener("change", handleSystemChange);
-
-    // Cleanup listener on unmount
-    return () => mediaQuery.removeEventListener("change", handleSystemChange);
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
+      { rootMargin: "-40% 0px -55% 0px" }
+    );
+    SECTIONS.forEach((s) => { const el = document.getElementById(s.id); if (el) io.observe(el); });
+    return () => io.disconnect();
   }, []);
 
-  // 3. APPLY THEME TO DOM
-  // Whenever the 'theme' state changes, we update the HTML tag
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
-
-  // 3b. CYBERPUNK HEADING GLITCH
-  // Copies each h1's text into data-text so the CSS glitch layers can use it
-  useEffect(() => {
-    document.querySelectorAll("h1").forEach((el) =>
-      el.setAttribute("data-text", el.textContent ?? "")
-    );
-  }, [theme]);
-
-  // 4. TOGGLE HANDLER (WITH VIEW TRANSITIONS)
-  const toggleTheme = async () => {
-    const nextTheme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
-
-    if (!document.startViewTransition) {
-      setTheme(nextTheme);
-      localStorage.setItem(STORAGE_KEY, nextTheme);
-      return;
-    }
-
-    // Tells the CSS to use the glitch reveal when going TO cyberpunk
-    const root = document.documentElement;
-    root.classList.toggle("to-cyberpunk", nextTheme === "cyberpunk");
-
-    const transition = document.startViewTransition(() => {
-      // flushSync forces React to synchronously update the DOM. 
-      // This is required so the View Transition API can capture the before/after states correctly!
-      flushSync(() => {
-        setTheme(nextTheme);
-      });
-    });
-
-    transition.finished.finally(() => root.classList.remove("to-cyberpunk"));
-
-    await transition.ready;
-
-    document.documentElement.animate(
-      {
-        opacity: [0, 1],
-      },
-      {
-        duration: 350,
-        easing: "ease",
-        pseudoElement: "::view-transition-new(root)",
-      }
-    );
-
-    localStorage.setItem(STORAGE_KEY, nextTheme);
-  };
-
-  // ======================================================
-  // RENDER
-  // ======================================================
   return (
-    <div>
-      <div className="toggle-container">
-        {/* Replaced addEventListener with React's onClick */}
-        <button
-          id="modeButton"
-          aria-label="Switch theme"
-          onClick={toggleTheme}
-        >
-          {NEXT_LABEL[theme] ?? "DARK MODE"}
-        </button>
-      </div>
-      <Header/>
-      <Nav/>
-      <About/>
-      <Skills/>
-      <Projects />
-      <ExperimentalWork/>
-      <ExperienceEducation />
-      <Contacts />
-      <div className="container">
-        {/* FOOTER */}
-        <footer>
-          <div>© 2026 PRATHAMESH PAL</div>
-          <div>Designed by 𝑷𝑹𝑨𝑻𝑯𝑨𝑴𝑬𝑺𝑯'𝒔 𝒈𝒊𝒓𝒍𝒇𝒓𝒊𝒆𝒏𝒅</div>
-        </footer>
-      </div>
-      <div className="flower">
-        <img src={flowerImg} alt="flowers" draggable={false} />
-      </div>
-      <div className="flower2">
-        <img src={flowerImg2} alt="flowers" draggable={false} />
-      </div>
-    </div>
+    <>
+      <Water />
+      <main className="page">
+        <Header />
+        {PAGES.map((Page, i) => (
+          <Fragment key={i}>
+            <Page />
+            {i < PAGES.length - 1 && <div className="break" aria-hidden="true" />}
+          </Fragment>
+        ))}
+      </main>
+      <Dock active={active} theme={theme} onToggle={toggle} />
+    </>
   );
 }
-
-export default App;

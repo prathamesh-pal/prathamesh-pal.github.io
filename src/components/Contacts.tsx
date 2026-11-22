@@ -1,23 +1,27 @@
-import "../App.css";
+import { CHANNELS } from "../content";
 
-
-function Contacts() {
+export default function Contacts() {
   return (
-    <div className="container">
-        {/* CONTACT */}
-        <div id="contact" className="contact-box">
-          <h2 className="uppercase" style={{ fontSize: "2rem", marginBottom: "1rem" }}>
-            Let's Work Together
-          </h2>
-          <div className="contact-links">
-            <a href="mailto:prathameshpal.tech@gmail.com">[ SEND EMAIL ]</a>
-            <a href="https://github.com/prathamesh-pal" target="_blank" rel="noopener noreferrer">[ GITHUB ]</a>
-            <a href="https://www.linkedin.com/in/prathamesh-pal-10227a240/" target="_blank" rel="noopener noreferrer">[ LINKEDIN ]</a>
-            <a href="https://x.com/Prathamesh_Pal_" target="_blank" rel="noopener noreferrer">[ TWITTER ]</a>
-          </div>
-        </div>
-    </div>
-  )
+    <section id="contact" className="sec" aria-labelledby="contact-h">
+      <h2 id="contact-h">Contact</h2>
+      <p className="lead">Let’s work together.</p>
+      <ul className="dotted channels">
+        {CHANNELS.map((c) => {
+          const ext = c.href.startsWith("http") || c.name === "Resume";
+          return (
+            <li key={c.name}>
+              <a href={c.href} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+                <span className="ed"><span className="ed-t c-name">{c.name}</span><span className="ed-arrow" aria-hidden="true">↗</span></span>
+                <span className="mono subtle">{c.handle}</span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+      <footer className="foot mono subtle">
+        <span>© 2026 Prathamesh Pal</span>
+        <span>Designed by Prathamesh’s girlfriend</span>
+      </footer>
+    </section>
+  );
 }
-
-export default Contacts

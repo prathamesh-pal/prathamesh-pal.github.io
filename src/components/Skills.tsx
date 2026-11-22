@@ -1,38 +1,17 @@
-import "../App.css";
+import { SKILLS } from "../content";
 
-
-function Skills() {
+export default function Skills() {
   return (
-   <div className="container">
-        
-        {/* SKILLS */}
-        <div id="skills">
-          <div className="section-header">01. TECHNICAL SKILLS</div>
-          <div className="split-row">
-            <div className="split-col">
-              <b className="uppercase">Languages</b>
-              <hr className="divider" />
-              <ul>
-                <li>Python</li>
-                <li>JavaScript</li>
-                <li>HTML & CSS</li>
-                <li>SQL & NoSQL</li>
-              </ul>
-            </div>
-            <div className="split-col">
-              <b className="uppercase">Frameworks</b>
-              <hr className="divider" />
-              <ul>
-                <li>LangChain & FastAPI</li>
-                <li>Node.js</li>
-                <li>React,Tailwind CSS</li>
-                <li>Git</li>
-              </ul>
-            </div>
+    <section id="skills" className="sec" aria-labelledby="skills-h">
+      <h2 id="skills-h">Skills</h2>
+      <div className="cols">
+        {Object.entries(SKILLS).map(([group, items]) => (
+          <div key={group}>
+            <h3>{group}</h3>
+            <ul className="dotted">{items.map((i) => <li key={i}>{i}</li>)}</ul>
           </div>
-        </div>
-</div>
-  )
+        ))}
+      </div>
+    </section>
+  );
 }
-
-export default Skills

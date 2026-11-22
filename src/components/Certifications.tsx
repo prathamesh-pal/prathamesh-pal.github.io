@@ -1,63 +1,44 @@
-import { useState } from "react";
-import cs50xImg  from "../assets/CS50x.png";
-import cs50pImg  from "../assets/CS50P.png";
+import { useEffect, useRef, useState } from "react";
+import cs50xImg from "../assets/CS50x.png";
+import cs50pImg from "../assets/CS50P.png";
 
-
-type Cert = {
-  title: string;
-  issuer: string;
-  year: string;
-  img: string;
-};
-
+type Cert = { title: string; issuer: string; year: string; img: string };
 const certs: Cert[] = [
-  {
-    title: "CS50x:",
-    issuer: "Harvard University",
-    year: "2025",
-    img: cs50xImg , // put your cert images in public/assets/
-  },
-  {
-    title: "CS50P:",
-    issuer: "Harvard University",
-    year: "2025",
-    img: cs50pImg,
-  },
+  { title: "CS50x", issuer: "Harvard University", year: "2025", img: cs50xImg },
+  { title: "CS50P", issuer: "Harvard University", year: "2025", img: cs50pImg },
 ];
 
-function Certifications() {
+export default function Certifications() {
   const [selected, setSelected] = useState<Cert | null>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const d = dialog.current;
+    if (!d) return;
+    if (selected && !d.open) d.showModal();
+    if (!selected && d.open) d.close();
+  }, [selected]);
 
   return (
-    <div className="cert-section">
-      <div className="certification">• Certification </div>
-
-      <div className="cert-grid">
-        {certs.map((cert) => (
-          <div
-            key={cert.title}
-            className="cert-item"
-            onClick={() => setSelected(cert)}
-          >
-            <span className="cert-title">{cert.title}</span>
-            <span className="cert-meta">{cert.issuer} · {cert.year}</span>
-            <span className="cert-cta">[ VIEW ]</span>
-          </div>
+    <>
+      <ul className="dotted certs">
+        {certs.map((c) => (
+          <li key={c.title}>
+            <button type="button" onClick={() => setSelected(c)}>
+              <span><b>{c.title}</b> <span className="muted">{c.issuer}, {c.year}</span></span>
+              <span className="view mono">View</span>
+            </button>
+          </li>
         ))}
-      </div>
-
-      {/* LIGHTBOX */}
-      {selected && (
-        <div className="lightbox" onClick={() => setSelected(null)}>
-          <div className="lightbox-inner" onClick={(e) => e.stopPropagation()}>
-            <button className="lightbox-close" onClick={() => setSelected(null)}>✕</button>
-            <img src={selected.img} alt={selected.title} />
-            <p>{selected.title}</p>
+      </ul>
+      <dialog ref={dialog} className="lightbox" onClose={() => setSelected(null)} onClick={(e) => { if (e.target === e.currentTarget) setSelected(null); }} aria-label={selected ? `${selected.title} certificate` : "Certificate"}>
+        {selected && (
+          <div className="lightbox-inner">
+            <img src={selected.img} alt={`${selected.title} certificate, ${selected.issuer}`} />
+            <button type="button" className="close" onClick={() => setSelected(null)}>Close</button>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </dialog>
+    </>
   );
 }
-
-export default Certifications;
